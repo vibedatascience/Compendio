@@ -73,10 +73,15 @@ td.t .crest{width:17px;height:17px;margin:0 6px 0 0}
 .expand{display:none;padding:12px 4px 22px}
 .row.exp .expand{display:block}
 .matchmeta{color:var(--steel);font-size:13.5px;margin-bottom:12px;max-width:840px}
-.goalcols{display:flex;gap:24px;max-width:840px;margin-bottom:12px;font-size:13.5px}
-.goalcols>div{flex:1}
+.goalcols{display:flex;align-items:flex-start;gap:14px;max-width:840px;margin-bottom:14px;font-size:13.5px}
+.goalcols .gh,.goalcols .ga{flex:1}
 .goalcols .gh{text-align:right}
-.goalcols .min{color:var(--gold);font:600 13px "Barlow Condensed"}
+.goalcols .ga{text-align:left}
+.goalcols .gball{color:var(--steel);font-size:12px;padding-top:2px}
+.goalcols .gl{line-height:1.7}
+.goalcols .min{color:var(--gold);font:600 13px "Barlow Condensed";display:inline-block;min-width:26px}
+.goalcols .gh .min{text-align:left;margin-left:6px}
+.goalcols .ga .min{text-align:right;margin-right:6px}
 .expand .player{aspect-ratio:16/9;max-width:840px;background:#000;border:1px solid var(--line)}
 .expand iframe{width:100%;height:100%;border:0;display:block}
 .expand .credit{color:var(--steel);font-size:13px;margin-top:8px;max-width:840px}
@@ -127,6 +132,8 @@ tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
 button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .legbtn{color:var(--gold);font:600 13px "Barlow Condensed";letter-spacing:.5px;padding:1px 4px;border:1px solid transparent}
 .legbtn:hover{border-color:var(--gold)}
+.matchmeta .permalink{color:var(--gold);font:600 13px "Barlow Condensed";letter-spacing:.5px;border:1px solid var(--line);padding:2px 8px}
+.matchmeta .permalink:hover{border-color:var(--gold)}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
 @media(max-width:820px){
   h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
@@ -184,7 +191,7 @@ decades.forEach(d=>{
 function buildSeasonNav(){
   document.querySelectorAll('.decades button').forEach(b=>b.classList.toggle('active',+b.dataset.d===curDecade));
   nav.innerHTML='';
-  seasons.filter(s=>Math.floor((+s.slice(0,4))/10)*10===curDecade).sort().forEach(s=>{
+  seasons.filter(s=>Math.floor((+s.slice(0,4))/10)*10===curDecade).sort().reverse().forEach(s=>{
     const b=document.createElement('button');
     b.textContent=s.replace('-','/');
     b.classList.toggle('active',s===curSeason);
@@ -226,14 +233,19 @@ function lineupHTML(m){
 }
 function goalsHTML(m){
   if(!m.goals||!m.goals.length) return '';
-  const g=s=>m.goals.filter(x=>x.s===s).map(x=>`<div><span class="min">${x.m?x.m+"'":''}</span> ${x.p}</div>`).join('');
-  return `<div class="goalcols"><div class="gh">${g('h')}</div><div>${g('a')}</div></div>`;
+  const gh=m.goals.filter(x=>x.s==='h').map(x=>`<div class="gl">${x.p} <span class="min">${x.m?x.m+"'":''}</span></div>`).join('');
+  const ga=m.goals.filter(x=>x.s==='a').map(x=>`<div class="gl"><span class="min">${x.m?x.m+"'":''}</span> ${x.p}</div>`).join('');
+  return `<div class="goalcols"><div class="gh">${gh}</div><div class="gball">\u26BD</div><div class="ga">${ga}</div></div>`;
 }
 function metaHTML(m){
   const bits=[];
   if(m.venue) bits.push(m.venue+(m.city?', '+m.city:''));
   if(m.att) bits.push(Number(m.att).toLocaleString()+' attendance');
-  return bits.length?`<div class="matchmeta">${bits.join(' \u00b7 ')}</div>`:'';
+  const link=`<button class="permalink" onclick="copyLink(this)" title="Copy link to this match">\u{1F517} Copy link</button>`;
+  return `<div class="matchmeta">${bits.join(' \u00b7 ')}${bits.length?' \u00b7 ':''}${link}</div>`;
+}
+function copyLink(btn){
+  navigator.clipboard.writeText(location.href).then(()=>{btn.textContent='\u2713 Copied';setTimeout(()=>{btn.innerHTML='\u{1F517} Copy link';},1500);});
 }
 function ytSearchUrl(m){
   const yr=m.date?m.date.slice(0,4):m.season.slice(0,4);
@@ -464,7 +476,7 @@ function toggle(i){
   row.querySelector('button').setAttribute('aria-expanded','true');
   const ex=row.querySelector('.expand');
   const m=flat[Number(ex.dataset.i)];
-  history.replaceState(null,'','#m/'+m.uefa_id);
+  history.replaceState(null,'','#'+matchSlug(m));
   document.title=`${m.home} ${m.score||''} ${m.away} \u00b7 ${m.season.replace('-','/')} \u2014 Compendio`;
   let inner=metaHTML(m)+goalsHTML(m);
   if(m.video_id){
@@ -485,10 +497,19 @@ function toggle(i){
   }
   row.scrollIntoView({block:'nearest'});
 }
+function slugTeam(t){return t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function matchSlug(m){
+  const M=['','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  let d='';
+  if(m.date){const[y,mo,da]=m.date.split('-');d='-'+da+M[+mo];}
+  return `${m.season}/${slugTeam(m.home)}-vs-${slugTeam(m.away)}${d}`;
+}
 function routeFromHash(){
-  const g=location.hash.match(/^#m\/(\d+)/);
-  if(!g)return false;
-  const m=MATCHES.find(x=>String(x.uefa_id)===g[1]);
+  const raw=decodeURIComponent(location.hash.slice(1));
+  let m=null;
+  const g=raw.match(/^m\/(\d+)/);
+  if(g)m=MATCHES.find(x=>String(x.uefa_id)===g[1]);
+  else if(raw.includes('/'))m=MATCHES.find(x=>matchSlug(x)===raw);
   if(!m)return false;
   gotoSeason(m.season);curView='matches';sortMode='stage';filter='';render();
   const i=flat.indexOf(m);
