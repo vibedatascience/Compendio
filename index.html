@@ -40,7 +40,7 @@ header>p{color:var(--steel);margin:8px 0 16px;max-width:74ch}
 .tick.dec::after{height:22px;background:var(--steel)}
 .tick:hover::after{background:var(--chalk);height:24px}
 .tick.on::after{background:var(--gold);width:3px;height:30px}
-.tick .dl{position:absolute;top:100%;left:0;margin-top:6px;color:var(--steel);font:600 13px "Barlow Condensed";letter-spacing:1px;white-space:nowrap}
+.tick .dl{position:absolute;top:100%;right:0;margin-top:6px;color:var(--steel);font:600 13px "Barlow Condensed";letter-spacing:1px;white-space:nowrap}
 .tick .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:8px;background:var(--panel);border:1px solid var(--line);padding:4px 8px;font:600 14px "Barlow Condensed";letter-spacing:.5px;color:var(--chalk);white-space:nowrap;pointer-events:none;z-index:3}
 .tick:hover .tip{display:flex;align-items:center;gap:6px}
 .tick .tip .crest{width:16px;height:16px;margin:0}
@@ -109,7 +109,7 @@ td.t .crest{width:17px;height:17px;margin:0 6px 0 0}
 .pitchside:last-child{grid-column:4}
 .lusec>h4{text-align:center}
 .pitchside h5{font:600 15px "Barlow Condensed";letter-spacing:1.5px;margin-bottom:4px;display:flex;align-items:center}
-.pitchside .coach{color:var(--steel);font-size:12.5px;margin-bottom:8px}
+.pitchside .coach{color:var(--steel);font-size:12.5px;margin-bottom:8px;min-height:19px}
 .pitch{width:100%;aspect-ratio:10/13;background:linear-gradient(180deg,#0e2f6e 0 50%,#0c2a64 50% 100%);border:1px solid var(--line);position:relative}
 .pitch::before{content:"";position:absolute;inset:0;border-bottom:1px solid var(--line)}
 .pp{position:absolute;transform:translate(-50%,-50%);text-align:center;width:74px}
@@ -155,7 +155,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .matchmeta .permalink:hover{border-color:var(--gold)}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
 @media(max-width:820px){
-  .tick .dl{font-size:11px;letter-spacing:.5px}.tick:first-child .dl{display:none}.readout .yr{font-size:24px}
+  .tick .dl{font-size:11px;letter-spacing:.5px}.tick:last-child .dl{display:none}.readout .yr{font-size:24px}
   .goalcols{grid-template-columns:1fr 70px 1fr 30px}.goalcols .gh{grid-column:1}.goalcols .gball{grid-column:2}.goalcols .ga{grid-column:3}
   .pitchwrap{display:flex;flex-wrap:wrap;gap:22px}.pitchside{flex:1;min-width:300px}
   h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
@@ -177,7 +177,7 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
   <p>The complete record of Europe's top club competition. Every match of every season since 1956 — with goalscorers, venues, lineups, standings, brackets, and the best publicly listed highlight video found for each.</p>
   <div class="tl" id="tl">
     <div class="readout" id="tlread"></div>
-    <div class="tlrow"><button class="step" id="tlprev" title="Previous season">&#9664;</button><div class="track" id="track" tabindex="0" role="slider" aria-label="Season"></div><button class="step" id="tlnext" title="Next season">&#9654;</button></div>
+    <div class="tlrow"><button class="step" id="tlprev" title="Newer season">&#9664;</button><div class="track" id="track" tabindex="0" role="slider" aria-label="Season"></div><button class="step" id="tlnext" title="Older season">&#9654;</button></div>
   </div>
 </header>
 <main id="main"></main>
@@ -203,12 +203,12 @@ function winnerOf(m){
 const champs={};
 MATCHES.filter(m=>m.stage==='Final').forEach(m=>{champs[m.season]=winnerOf(m);});
 
-const asc=[...seasons].sort();
+const asc=[...seasons].sort().reverse();
 const track=document.getElementById('track'),tlread=document.getElementById('tlread');
 asc.forEach((sn,i)=>{
   const t=document.createElement('div');t.className='tick';t.dataset.s=sn;
   const y=+sn.slice(0,4);
-  if(y%10===0||i===0){t.classList.add('dec');t.innerHTML=`<span class="dl">${Math.floor(y/10)*10}s</span>`;}
+  if(y%10===9||i===0){t.classList.add('dec');t.innerHTML=`<span class="dl">${Math.floor(y/10)*10}s</span>`;}
   const c=champs[sn];
   t.innerHTML+=`<span class="tip">${sn.replace('-','/')}${c?' \u00b7 '+crest(c)+c:''}</span>`;
   track.appendChild(t);
@@ -260,7 +260,7 @@ function pitchSide(side){
   });
   const bench=side.bench.map(b=>`${b.n||''} ${b.name||''}`).join(', ');
   return `<div class="pitchside"><h5>${crest(side.team)}${side.team}</h5>
-    <div class="coach">${side.coach?'Coach: '+side.coach:''}</div>
+    <div class="coach">${side.coach?'Coach: '+side.coach:''}${side.formation_est?(side.coach?' \u00b7 ':'')+side.formation_est+(side.formation_src==='roles'?' (shape from player roles)':' (shape estimated from shirt numbers)'):''}</div>
     <div class="pitch">${pts}</div>
     <div class="benchlist"><b>Bench:</b> ${bench||'\u2013'}</div></div>`;
 }
@@ -269,7 +269,7 @@ function decadeOf(m){return String(Math.floor((+m.season.slice(0,4))/10)*10)+'s'
 function loadLineups(m){
   const dk=decadeOf(m);
   if(luLoading[dk])return luLoading[dk];
-  luLoading[dk]=fetch(`lineups_${dk}.json?v=6`).then(r=>r.json()).then(j=>{Object.assign(LINEUPS,j);return j;});
+  luLoading[dk]=fetch(`lineups_${dk}.json?v=7`).then(r=>r.json()).then(j=>{Object.assign(LINEUPS,j);return j;});
   return luLoading[dk];
 }
 function lineupHTML(m){
