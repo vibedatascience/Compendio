@@ -125,6 +125,8 @@ tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
 .lusec{margin-top:18px}
 .lusec h4{font:600 15px "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);margin-bottom:8px}
 button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.legbtn{color:var(--gold);font:600 13px "Barlow Condensed";letter-spacing:.5px;padding:1px 4px;border:1px solid transparent}
+.legbtn:hover{border-color:var(--gold)}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
 @media(max-width:820px){
   h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
@@ -424,9 +426,8 @@ function renderBracket(){
   rounds.forEach(r=>{
     html+=`<div class="round"><h4>${r.name.toUpperCase()}</h4><div class="ties">`;
     r.ties.forEach(t=>{
-      const legs=t.legs.length>1
-        ?'Legs: '+t.legs.map(l=>l.score).join(' \u00b7 ')+(t.legs[t.legs.length-1].score_detail?' '+t.legs[t.legs.length-1].score_detail:'')
-        :t.legs[0].score+(t.legs[0].score_detail?' '+t.legs[0].score_detail:'');
+      const legBtn=l=>`<button class="legbtn" onclick="openMatch(${l.uefa_id})" title="${l.home} ${l.score} ${l.away} \u2014 open match">${l.score}${l.score_detail?' '+l.score_detail:''}${l.video_id?' \u25B8':''}</button>`;
+      const legs=(t.legs.length>1?'Legs: ':'')+t.legs.map(legBtn).join(' \u00b7 ');
       html+=`<div class="tie">
         <div class="tm ${t.winner===t.a?'w':''}"><span>${crest(t.a)}${t.a}</span><span>${t.ga}</span></div>
         <div class="tm ${t.winner===t.b?'w':''}"><span>${crest(t.b)}${t.b}</span><span>${t.gb}</span></div>
@@ -437,6 +438,18 @@ function renderBracket(){
   });
   html+='</div><p class="legend">Aggregate scores shown. Level ties decided by penalties, replays, or away goals depending on era.</p>';
   main.innerHTML=html;
+}
+function openMatch(uid){
+  const m=MATCHES.find(x=>x.uefa_id===uid);
+  if(!m)return;
+  curView='matches';sortMode='stage';render();
+  const i=flat.indexOf(m);
+  if(i>=0){
+    const row=document.getElementById('r'+i);
+    const md=row.closest('.md');if(md)md.classList.add('open');
+    toggle(i);
+    row.scrollIntoView({block:'center'});
+  }
 }
 function toggle(i){
   const row=document.getElementById('r'+i);
