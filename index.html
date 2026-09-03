@@ -382,7 +382,9 @@ function toggle(i){
   if(ex.dataset.vid){
     ex.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${ex.dataset.vid}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${ex.dataset.credit}</div>` + lineupHTML(flat[Number(ex.dataset.i)]);
   } else {
-    ex.innerHTML=`<div class="fallback">No indexed video yet for this match. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a></div>` + lineupHTML(flat[Number(ex.dataset.i)]);
+    const fm=flat[Number(ex.dataset.i)];
+    const uefaLink = fm.uefa_id ? ` \u00b7 <a href="https://www.uefa.com/uefachampionsleague/match/${fm.uefa_id}/" target="_blank" rel="noopener">Official match page on UEFA.com</a>` : '';
+    ex.innerHTML=`<div class="fallback">No indexed video yet. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a>${uefaLink}</div>` + lineupHTML(fm);
   }
   row.scrollIntoView({block:'nearest'});
 }
