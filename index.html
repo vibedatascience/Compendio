@@ -29,13 +29,26 @@ h1 span{color:var(--gold)}
 .tools input::placeholder{color:var(--steel)}
 .tools .rnd{background:var(--gold);color:var(--night);padding:8px 16px;font:600 16px "Barlow Condensed";letter-spacing:1px}
 header>p{color:var(--steel);margin:8px 0 16px;max-width:74ch}
-.decades{display:flex;gap:2px;flex-wrap:wrap}
-.decades button{padding:8px 13px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--steel)}
-.decades button.active{color:var(--gold)}
-.seasons{display:flex;gap:2px;overflow-x:auto}
-.seasons button{padding:9px 13px;font:600 17px "Barlow Condensed";letter-spacing:.5px;color:var(--steel);border-bottom:3px solid transparent;white-space:nowrap}
-.seasons button:hover,.decades button:hover{color:var(--chalk)}
-.seasons button.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tl{position:relative;padding:58px 0 30px;user-select:none;touch-action:none}
+.tlrow{display:flex;align-items:center;gap:10px}
+.tl .step{color:var(--steel);font:600 20px "Barlow Condensed";padding:0 8px;line-height:1}
+.tl .step:hover{color:var(--gold)}
+.track{flex:1;display:flex;align-items:flex-end;height:30px;cursor:pointer;position:relative;outline:none}
+.track:focus-visible{outline:1px dashed rgba(255,205,60,.45);outline-offset:8px}
+.tick{flex:1;position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.tick::after{content:"";display:block;width:1px;height:12px;background:var(--line);transition:height .12s,background .12s}
+.tick.dec::after{height:22px;background:var(--steel)}
+.tick:hover::after{background:var(--chalk);height:24px}
+.tick.on::after{background:var(--gold);width:3px;height:30px}
+.tick .dl{position:absolute;top:100%;left:0;margin-top:6px;color:var(--steel);font:600 13px "Barlow Condensed";letter-spacing:1px;white-space:nowrap}
+.tick .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:8px;background:var(--panel);border:1px solid var(--line);padding:4px 8px;font:600 14px "Barlow Condensed";letter-spacing:.5px;color:var(--chalk);white-space:nowrap;pointer-events:none;z-index:3}
+.tick:hover .tip{display:flex;align-items:center;gap:6px}
+.tick .tip .crest{width:16px;height:16px;margin:0}
+.readout{position:absolute;top:0;transform:translateX(-50%);display:flex;align-items:center;gap:10px;pointer-events:none;white-space:nowrap;z-index:2}
+.readout .yr{font:700 30px/1 "Barlow Condensed";color:var(--gold);letter-spacing:.5px}
+.readout .ch{color:var(--steel);font:500 14px Barlow;display:flex;align-items:center;gap:4px}
+.readout .ch b{color:var(--chalk);font-weight:500}
+.readout .crest{width:22px;height:22px;margin:0}
 main{padding:24px 30px 90px;max-width:1140px}
 .season-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
 .season-head h2{font:700 36px/1 "Barlow Condensed"}
@@ -139,6 +152,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .matchmeta .permalink:hover{border-color:var(--gold)}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
 @media(max-width:820px){
+  .tick .dl{font-size:11px;letter-spacing:.5px}.tick:first-child .dl{display:none}.readout .yr{font-size:24px}
   .goalcols{grid-template-columns:1fr 70px 1fr 30px}.goalcols .gh{grid-column:1}.goalcols .gball{grid-column:2}.goalcols .ga{grid-column:3}
   .pitchwrap{display:flex;flex-wrap:wrap;gap:22px}.pitchside{flex:1;min-width:300px}
   h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
@@ -158,8 +172,10 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
     </div>
   </div>
   <p>The complete record of Europe's top club competition. Every match of every season since 1956 — with goalscorers, venues, lineups, standings, brackets, and the best publicly listed highlight video found for each.</p>
-  <div class="decades" id="decadeNav"></div>
-  <div class="seasons" id="seasonNav"></div>
+  <div class="tl" id="tl">
+    <div class="readout" id="tlread"></div>
+    <div class="tlrow"><button class="step" id="tlprev" title="Previous season">&#9664;</button><div class="track" id="track" tabindex="0" role="slider" aria-label="Season"></div><button class="step" id="tlnext" title="Next season">&#9654;</button></div>
+  </div>
 </header>
 <main id="main"></main>
 <footer>6,039 matches across 71 seasons, 1955/56 to 2025/26. Match data, goalscorers, venues, and lineups from UEFA's public match feed; crests from UEFA's image service. Videos are embedded from their original YouTube uploaders — nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Matches without an indexed video link to a targeted search and the official UEFA.com match page.</footer>
@@ -169,8 +185,6 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
 const STAGE_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Playoff Round','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H','Second Group A','Second Group B','Second Group C','Second Group D','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
 const KO_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
 const seasons=[...new Set(MATCHES.map(m=>m.season))].sort().reverse();
-const nav=document.getElementById('seasonNav');
-const dnav=document.getElementById('decadeNav');
 const main=document.getElementById('main');
 let curSeason=seasons[0],curView='matches',curDecade=Math.floor((+seasons[0].slice(0,4))/10)*10,flat=[],sortMode='stage',filter='';
 
@@ -186,25 +200,39 @@ function winnerOf(m){
 const champs={};
 MATCHES.filter(m=>m.stage==='Final').forEach(m=>{champs[m.season]=winnerOf(m);});
 
-const decades=[...new Set(seasons.map(s=>Math.floor((+s.slice(0,4))/10)*10))].sort((a,b)=>b-a);
-decades.forEach(d=>{
-  const b=document.createElement('button');
-  b.textContent=d+'s'; b.dataset.d=d;
-  b.onclick=()=>{curDecade=d;buildSeasonNav();};
-  dnav.appendChild(b);
+const asc=[...seasons].sort();
+const track=document.getElementById('track'),tlread=document.getElementById('tlread');
+asc.forEach((sn,i)=>{
+  const t=document.createElement('div');t.className='tick';t.dataset.s=sn;
+  const y=+sn.slice(0,4);
+  if(y%10===0||i===0){t.classList.add('dec');t.innerHTML=`<span class="dl">${Math.floor(y/10)*10}s</span>`;}
+  const c=champs[sn];
+  t.innerHTML+=`<span class="tip">${sn.replace('-','/')}${c?' \u00b7 '+crest(c)+c:''}</span>`;
+  track.appendChild(t);
 });
+function seasonAtX(x){const r=track.getBoundingClientRect();const i=Math.round((x-r.left)/r.width*(asc.length-1));return asc[Math.max(0,Math.min(asc.length-1,i))];}
+function setSeason(sn,go){if(sn===curSeason&&!go)return;curSeason=sn;curDecade=Math.floor((+sn.slice(0,4))/10)*10;buildSeasonNav();if(go){curView='matches';render();}}
+let dragging=false,lastDrag=null;
+track.addEventListener('pointerdown',e=>{dragging=true;track.setPointerCapture(e.pointerId);lastDrag=seasonAtX(e.clientX);setSeason(lastDrag,false);});
+track.addEventListener('pointermove',e=>{if(!dragging)return;const sn=seasonAtX(e.clientX);if(sn!==lastDrag){lastDrag=sn;setSeason(sn,false);}});
+track.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;setSeason(seasonAtX(e.clientX),true);});
+track.addEventListener('keydown',e=>{const i=asc.indexOf(curSeason);if(e.key==='ArrowLeft'&&i>0)setSeason(asc[i-1],true);else if(e.key==='ArrowRight'&&i<asc.length-1)setSeason(asc[i+1],true);else if(e.key==='Home')setSeason(asc[0],true);else if(e.key==='End')setSeason(asc[asc.length-1],true);else return;e.preventDefault();});
+document.getElementById('tlprev').onclick=()=>{const i=asc.indexOf(curSeason);if(i>0)setSeason(asc[i-1],true);};
+document.getElementById('tlnext').onclick=()=>{const i=asc.indexOf(curSeason);if(i<asc.length-1)setSeason(asc[i+1],true);};
 function buildSeasonNav(){
-  document.querySelectorAll('.decades button').forEach(b=>b.classList.toggle('active',+b.dataset.d===curDecade));
-  nav.innerHTML='';
-  seasons.filter(s=>Math.floor((+s.slice(0,4))/10)*10===curDecade).sort().reverse().forEach(s=>{
-    const b=document.createElement('button');
-    b.textContent=s.replace('-','/');
-    b.classList.toggle('active',s===curSeason);
-    b.onclick=()=>{curSeason=s;curView='matches';buildSeasonNav();render();};
-    nav.appendChild(b);
-  });
+  const i=asc.indexOf(curSeason);
+  track.querySelectorAll('.tick').forEach(t=>t.classList.toggle('on',t.dataset.s===curSeason));
+  track.setAttribute('aria-valuetext',curSeason);
+  const c=champs[curSeason];
+  tlread.innerHTML=`<span class="yr">${curSeason.replace('-','/')}</span><span class="ch">${c?crest(c)+'<b>'+c+'</b>':''}</span>`;
+  const pct=i/(asc.length-1);
+  const w=track.clientWidth,rw=tlread.offsetWidth||200,tlw=document.getElementById('tl').clientWidth;
+  const off=track.getBoundingClientRect().left-document.getElementById('tl').getBoundingClientRect().left;
+  let x=off+pct*w;x=Math.max(rw/2,Math.min(tlw-rw/2,x));
+  tlread.style.left=x+'px';
 }
-function gotoSeason(s){curSeason=s;curDecade=Math.floor((+s.slice(0,4))/10)*10;buildSeasonNav();}
+window.addEventListener('resize',buildSeasonNav);
+function gotoSeason(s){setSeason(s,false);}
 
 function crest(team){
   const u=LOGOS[team];
