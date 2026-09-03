@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Compendio — every European Cup match since 1956</title>
+<meta name="description" content="The complete Champions League and European Cup archive: 6,039 matches across 71 seasons with highlights, goalscorers, lineups, standings, and brackets.">
+<meta property="og:title" content="Compendio">
+<meta property="og:description" content="Every European Cup match since 1956 — highlights, lineups, standings, brackets.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#06184a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%2306184a%22/><text x=%2216%22 y=%2223%22 font-size=%2220%22 font-family=%22Georgia%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22%23d4af37%22>C</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -108,6 +114,17 @@ tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
 .tie .tm.w{color:var(--gold);font-weight:600}
 .tie .tm span:last-child{font:600 16px "Barlow Condensed"}
 .tie .legs{color:var(--steel);font-size:12.5px;margin-top:5px}
+
+.qwrap{position:relative}
+#qresults{display:none;position:absolute;top:calc(100% + 4px);right:0;width:290px;max-height:340px;overflow-y:auto;background:var(--panel);border:1px solid var(--line);z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#qresults .qmeta{color:var(--steel);font-size:12.5px;padding:9px 12px;border-bottom:1px solid var(--line)}
+#qresults button{display:flex;justify-content:space-between;width:100%;padding:8px 12px;text-align:left;font:600 15px "Barlow Condensed";letter-spacing:.5px}
+#qresults button:hover{background:var(--pitch)}
+#qresults button span{color:var(--gold)}
+.ludot{color:var(--gold);margin-right:5px;font-size:15px}
+.lusec{margin-top:18px}
+.lusec h4{font:600 15px "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);margin-bottom:8px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
 @media(max-width:820px){
   h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
@@ -122,7 +139,7 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
   <div class="topline">
     <h1>Compen<span>dio</span></h1>
     <div class="tools">
-      <input id="q" placeholder="Filter by team..." aria-label="Filter matches by team">
+      <div class="qwrap"><input id="q" placeholder="Search team, all seasons..." aria-label="Search matches by team across all seasons" autocomplete="off"><div id="qresults"></div></div>
       <button class="rnd" onclick="randomMatch()">Random match</button>
     </div>
   </div>
@@ -132,9 +149,8 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
 </header>
 <main id="main"></main>
 <footer>6,039 matches across 71 seasons, 1955/56 to 2025/26. Match data, goalscorers, venues, and lineups from UEFA's public match feed; crests from UEFA's image service. Videos are embedded from their original YouTube uploaders — nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Matches without an indexed video link to a targeted search and the official UEFA.com match page.</footer>
-<script src="archive_data.js?v=4"></script>
-<script src="logos.js?v=3"></script>
-<script src="lineups.js?v=3"></script>
+<script src="archive_data.js?v=5"></script>
+<script src="logos.js?v=5"></script>
 <script>
 const STAGE_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Playoff Round','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H','Second Group A','Second Group B','Second Group C','Second Group D','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
 const KO_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
@@ -192,9 +208,17 @@ function pitchSide(side){
     <div class="pitch">${pts}</div>
     <div class="benchlist"><b>Bench:</b> ${bench||'\u2013'}</div></div>`;
 }
+let LINEUPS=null,lineupsLoading=null;
+function loadLineups(){
+  if(LINEUPS)return Promise.resolve(LINEUPS);
+  if(!lineupsLoading)lineupsLoading=fetch('lineups_data.json?v=5').then(r=>r.json()).then(j=>{LINEUPS=j;return j;});
+  return lineupsLoading;
+}
 function lineupHTML(m){
-  const lu=m.uefa_id&&LINEUPS[String(m.uefa_id)];
-  return lu?`<div class="pitchwrap">${pitchSide(lu.h)}${pitchSide(lu.a)}</div>`:'';
+  if(!m.lu)return'';
+  const lu=LINEUPS&&LINEUPS[String(m.uefa_id)];
+  if(!lu)return`<div class="lusec" id="lu${m.uefa_id}"><h4>LINEUPS</h4><p class="legend">Loading lineups\u2026</p></div>`;
+  return`<div class="lusec"><h4>LINEUPS</h4><div class="pitchwrap">${pitchSide(lu.h)}${pitchSide(lu.a)}</div></div>`;
 }
 function goalsHTML(m){
   if(!m.goals||!m.goals.length) return '';
@@ -215,12 +239,12 @@ function fmtDate(d){if(!d)return'';const[y,mo,da]=d.split('-');const M=['','Jan'
 function matchRow(m,idx){
   const has=!!m.video_id;
   return `<div class="row" id="r${idx}">
-    <button onclick="toggle(${idx})">
+    <button onclick="toggle(${idx})" aria-expanded="false">
       <span class="d">${fmtDate(m.date)}</span>
       <span class="h">${m.home}${crest(m.home)}</span>
       <span class="sc">${m.score||'\u2013'}${m.score_detail?`<small>${m.score_detail}</small>`:''}</span>
       <span class="a">${crest(m.away)}${m.away}</span>
-      <span class="cam ${has?'has':''}">${has?'\u25B6':'\u2197'}</span>
+      <span class="cam ${has?'has':''}">${m.lu?'<span class="ludot" title="Lineups available">\u2059</span>':''}${has?'\u25B6':'\u2197'}</span>
     </button>
     <div class="expand" data-i="${idx}"></div>
   </div>`;
@@ -242,10 +266,16 @@ function render(){
   else if(curView==='standings')renderStandings();
   else renderBracket();
 }
+function teamMatch(team,q){
+  const t=team.toLowerCase(),f=q.toLowerCase();
+  if(t.includes(f))return true;
+  const qws=f.split(/\s+/).filter(w=>w.length>=3);
+  const tws=t.split(/[\s.]+/).filter(Boolean);
+  return qws.some(qw=>tws.some(tw=>tw.startsWith(qw.slice(0,4))||qw.startsWith(tw)));
+}
 function passFilter(m){
   if(!filter)return true;
-  const f=filter.toLowerCase();
-  return m.home.toLowerCase().includes(f)||m.away.toLowerCase().includes(f);
+  return teamMatch(m.home,filter)||teamMatch(m.away,filter);
 }
 function renderMatches(){
   let ms=MATCHES.filter(m=>m.season===curSeason&&passFilter(m));
@@ -412,12 +442,16 @@ function toggle(i){
   const wasOpen=row.classList.contains('exp');
   document.querySelectorAll('.row.exp').forEach(r=>{
     r.classList.remove('exp');
+    r.querySelector('button').setAttribute('aria-expanded','false');
     const f=r.querySelector('iframe');if(f)f.remove();
   });
-  if(wasOpen)return;
+  if(wasOpen){history.replaceState(null,'','#');return;}
   row.classList.add('exp');
+  row.querySelector('button').setAttribute('aria-expanded','true');
   const ex=row.querySelector('.expand');
   const m=flat[Number(ex.dataset.i)];
+  history.replaceState(null,'','#m/'+m.uefa_id);
+  document.title=`${m.home} ${m.score||''} ${m.away} \u00b7 ${m.season.replace('-','/')} \u2014 Compendio`;
   let inner=metaHTML(m)+goalsHTML(m);
   if(m.video_id){
     inner+=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${m.video_id}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${(m.video_title||'').replace(/</g,'&lt;')} \u2014 ${m.channel||''}</div>`;
@@ -427,7 +461,25 @@ function toggle(i){
   }
   inner+=lineupHTML(m);
   ex.innerHTML=inner;
+  if(m.lu&&!LINEUPS){
+    loadLineups().then(()=>{
+      if(row.classList.contains('exp')){
+        const sec=ex.querySelector('.lusec');
+        if(sec)sec.outerHTML=lineupHTML(m);
+      }
+    });
+  }
   row.scrollIntoView({block:'nearest'});
+}
+function routeFromHash(){
+  const g=location.hash.match(/^#m\/(\d+)/);
+  if(!g)return false;
+  const m=MATCHES.find(x=>String(x.uefa_id)===g[1]);
+  if(!m)return false;
+  gotoSeason(m.season);curView='matches';sortMode='stage';filter='';render();
+  const i=flat.indexOf(m);
+  if(i>=0){const row=document.getElementById('r'+i);const md=row.closest('.md');if(md)md.classList.add('open');toggle(i);row.scrollIntoView({block:'center'});}
+  return true;
 }
 function randomMatch(){
   const pool=MATCHES.filter(m=>m.score&&(!filter||passFilter(m)));
@@ -444,9 +496,34 @@ function randomMatch(){
     row.scrollIntoView({block:'center'});
   }
 }
-document.getElementById('q').addEventListener('input',e=>{filter=e.target.value.trim();if(curView==='matches')render();});
-buildSeasonNav();
-render();
+const qEl=document.getElementById('q');
+let qTimer=null;
+qEl.addEventListener('input',e=>{
+  clearTimeout(qTimer);
+  qTimer=setTimeout(()=>{
+    filter=e.target.value.trim();
+    const box=document.getElementById('qresults');
+    if(filter.length<3){box.style.display='none';if(curView==='matches')render();return;}
+    const f=filter.toLowerCase();
+    const hits=MATCHES.filter(m=>teamMatch(m.home,filter)||teamMatch(m.away,filter));
+    const bySeason={};
+    hits.forEach(m=>{(bySeason[m.season]=bySeason[m.season]||[]).push(m);});
+    const seasonsHit=Object.keys(bySeason).sort().reverse();
+    let html=`<div class="qmeta">${hits.length} matches in ${seasonsHit.length} seasons \u2014 click a season, or press Enter to filter the current one</div>`;
+    seasonsHit.slice(0,40).forEach(s=>{
+      html+=`<button onclick="jumpSearch('${s}')">${s.replace('-','/')} <span>${bySeason[s].length}</span></button>`;
+    });
+    box.innerHTML=html;box.style.display='block';
+  },200);
+});
+qEl.addEventListener('keydown',e=>{if(e.key==='Enter'){document.getElementById('qresults').style.display='none';if(curView==='matches')render();}});
+document.addEventListener('click',e=>{if(!e.target.closest('.tools'))document.getElementById('qresults').style.display='none';});
+function jumpSearch(s){
+  document.getElementById('qresults').style.display='none';
+  gotoSeason(s);curView='matches';render();
+}
+function boot(){buildSeasonNav();routeFromHash()||render();}
+if(document.readyState==='loading')window.addEventListener('DOMContentLoaded',boot);else boot();
 </script>
 </body>
 </html>
