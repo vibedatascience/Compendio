@@ -1,19 +1,36 @@
 # Compendio
 
-The complete record of Europe's top club competition. Every fixture of every season, each linked to the best publicly listed highlight video found for it.
+The complete record of Europe's top club competition. Every fixture of every season since 1955-56, each linked to the best publicly listed highlight video found for it.
 
 ## What's inside
 
 - index.html - the archive site (static, no build step)
-- archive_data.js - inlined dataset the site reads
-- matches.json - 1,997 matches across seasons 2011-12 to 2025-26 (league phase, groups, playoffs, knockouts, finals)
-- finals.json - all 71 finals 1956-2026 with matched highlight videos
-- scripts/ - fixture parser and video scrapers (yt-dlp based, no API key)
+- archive_data.js - inlined dataset the site reads (same as matches_full.json plus a lineup-availability flag)
+- matches_full.json - 6,039 matches across 71 seasons, 1955-56 to 2025-26, with goalscorers, venues, attendances, and video IDs
+- lineups_1950s.json ... lineups_2020s.json - starting XIs with pitch positions for 6,021 matches, loaded per decade on demand
+- logos.js - club crest URLs
+- scripts/ - fixture parsers and yt-dlp based video search (no API key)
 
 ## Coverage status
 
-- Fixtures: 2011-12 onward complete (source: openfootball, public domain). Pre-2011 has finals only.
-- Videos: all 71 finals plus recent knockout rounds. Remaining matches show a targeted YouTube search link until scraped.
+Videos: 4,897 of 6,039 matches (81%). By decade:
+
+| Decade | Matches with video |
+|--------|--------------------|
+| 1950s | 55 / 154 (36%) |
+| 1960s | 189 / 424 (45%) |
+| 1970s | 285 / 599 (48%) |
+| 1980s | 395 / 603 (66%) |
+| 1990s | 676 / 791 (85%) |
+| 2000s | 1,200 / 1,346 (89%) |
+| 2010s | 1,227 / 1,244 (99%) |
+| 2020s | 878 / 878 (100%) |
+
+Matches without a video show a targeted YouTube search link and a UEFA.com match page link.
+
+## Video matching
+
+scripts/backfill_verified.py searches YouTube via yt-dlp and only accepts a result whose title contains both club names, a matching season year or date, and a consistent score. Video-game and preview uploads are filtered by keyword. Results are ranked by official-channel bonus and view count. scripts/apply_backfill.py merges results into the dataset and regenerates archive_data.js.
 
 ## Notes
 
