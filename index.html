@@ -426,7 +426,7 @@ function renderBracket(){
   rounds.forEach(r=>{
     html+=`<div class="round"><h4>${r.name.toUpperCase()}</h4><div class="ties">`;
     r.ties.forEach(t=>{
-      const legBtn=l=>`<button class="legbtn" onclick="openMatch(${l.uefa_id})" title="${l.home} ${l.score} ${l.away} \u2014 open match">${l.score}${l.score_detail?' '+l.score_detail:''}${l.video_id?' \u25B8':''}</button>`;
+      const legBtn=l=>`<button class="legbtn" onclick="openMatch('${l.uefa_id}')" title="${l.home} ${l.score} ${l.away} \u2014 open match">${l.score}${l.score_detail?' '+l.score_detail:''}${l.video_id?' \u25B8':''}</button>`;
       const legs=(t.legs.length>1?'Legs: ':'')+t.legs.map(legBtn).join(' \u00b7 ');
       html+=`<div class="tie">
         <div class="tm ${t.winner===t.a?'w':''}"><span>${crest(t.a)}${t.a}</span><span>${t.ga}</span></div>
@@ -440,7 +440,7 @@ function renderBracket(){
   main.innerHTML=html;
 }
 function openMatch(uid){
-  const m=MATCHES.find(x=>x.uefa_id===uid);
+  const m=MATCHES.find(x=>String(x.uefa_id)===String(uid));
   if(!m)return;
   curView='matches';sortMode='stage';render();
   const i=flat.indexOf(m);
