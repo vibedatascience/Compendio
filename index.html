@@ -79,6 +79,25 @@ tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
 .tie .tm span:last-child{font:600 16px "Barlow Condensed"}
 .tie .legs{color:var(--steel);font-size:12.5px;margin-top:5px}
 
+
+.crest{width:20px;height:20px;object-fit:contain;vertical-align:-4px;margin:0 6px}
+.row .h .crest{margin-right:0;margin-left:6px}
+td.t .crest{width:17px;height:17px;margin:0 6px 0 0}
+.tie .crest{width:18px;height:18px;margin-right:7px}
+.pitchwrap{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;max-width:840px}
+.pitchside{flex:1;min-width:300px}
+.pitchside h5{font:600 15px "Barlow Condensed";letter-spacing:1.5px;margin-bottom:4px;display:flex;align-items:center}
+.pitchside .coach{color:var(--steel);font-size:12.5px;margin-bottom:8px}
+.pitch{width:100%;aspect-ratio:10/13;background:linear-gradient(180deg,#0e2f6e 0 50%,#0c2a64 50% 100%);border:1px solid var(--line);position:relative}
+.pitch::before{content:"";position:absolute;inset:0;background:
+ radial-gradient(circle at 50% 0,transparent 58px,transparent 59px),
+ linear-gradient(var(--line),var(--line)) 50% 0/1px 0;
+ border-bottom:1px solid var(--line)}
+.pp{position:absolute;transform:translate(-50%,-50%);text-align:center;width:74px}
+.pp .num{width:26px;height:26px;line-height:26px;border-radius:50%;background:var(--night);border:1.5px solid var(--gold);color:var(--gold);font:600 13px "Barlow Condensed";margin:0 auto}
+.pp .nm{font-size:10.5px;color:var(--chalk);margin-top:2px;text-shadow:0 1px 2px #000;line-height:1.15}
+.benchlist{color:var(--steel);font-size:12.5px;margin-top:8px;line-height:1.6}
+.benchlist b{color:var(--chalk);font-weight:500}
 footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:90ch}
 @media(max-width:760px){
   h1{font-size:34px} main{padding:20px 14px 70px} header{padding:20px 14px 0}
@@ -96,6 +115,8 @@ footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);fon
 <main id="main"></main>
 <footer>1,997 matches across 15 modern seasons plus 56 classic finals back to 1956. Videos are embedded from their original YouTube uploaders; nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Fixture data: openfootball (public domain).</footer>
 <script src="archive_data.js"></script>
+<script src="logos.js"></script>
+<script src="lineups.js"></script>
 <script>
 const STAGE_ORDER = ['Final','Semifinals','Quarterfinals','Round of 16','Knockout Playoffs','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H'];
 const KO_ORDER = ['Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
@@ -128,6 +149,28 @@ cb.onclick=()=>{curSeason=null;setActive(cb);renderClassic();};
 nav.appendChild(cb);
 function setActive(btn){document.querySelectorAll('.seasons button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 
+function crest(team){
+  const u=LOGOS[team];
+  return u?`<img class="crest" src="${u}" alt="" loading="lazy" onerror="this.remove()">`:'';
+}
+function pitchSide(side){
+  let pts='';
+  side.xi.forEach(p=>{
+    if(p.x==null||p.y==null) return;
+    const lx=p.x/10, ly=96-p.y*0.092;
+    pts+=`<div class="pp" style="left:${lx}%;top:${ly}%"><div class="num">${p.n||''}</div><div class="nm">${p.name||''}</div></div>`;
+  });
+  const bench=side.bench.map(b=>`${b.n||''} ${b.name||''}`).join(', ');
+  return `<div class="pitchside"><h5>${crest(side.team)}${side.team}</h5>
+    <div class="coach">${side.coach?'Coach: '+side.coach:''}</div>
+    <div class="pitch">${pts}</div>
+    <div class="benchlist"><b>Bench:</b> ${bench||'\u2013'}</div></div>`;
+}
+function lineupHTML(m){
+  const lu=m.uefa_id && LINEUPS[String(m.uefa_id)];
+  if(!lu) return '';
+  return `<div class="pitchwrap">${pitchSide(lu.h)}${pitchSide(lu.a)}</div>`;
+}
 function ytSearchUrl(m){
   const yr = m.date ? m.date.slice(0,4) : m.season.slice(0,4);
   return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${m.home} ${m.away} ${m.score} Champions League ${yr} highlights`);
@@ -138,13 +181,13 @@ function matchRow(m, idx){
   return `<div class="row" id="r${idx}">
     <button onclick="toggle(${idx})">
       <span class="d">${m.dateLabel||fmtDate(m.date)}</span>
-      <span class="h">${m.home}</span>
+      <span class="h">${m.home}${crest(m.home)}</span>
       <span class="sc">${m.score||'\u2013'}${m.score_detail?`<small>${m.score_detail}</small>`:''}</span>
-      <span class="a">${m.away}</span>
+      <span class="a">${crest(m.away)}${m.away}</span>
       <span class="cam ${has?'has':''}">${has?'\u25B6':'\u2197'}</span>
     </button>
     <div class="expand" data-vid="${m.video_id||''}" data-search="${ytSearchUrl(m)}"
-      data-credit="${has?(m.video_title||'').replace(/"/g,'&quot;')+' \u2014 '+(m.channel||''):''}"></div>
+      data-credit="${has?(m.video_title||'').replace(/"/g,'&quot;')+' \u2014 '+(m.channel||''):''}" data-i="${idx}"></div>
   </div>`;
 }
 
@@ -228,7 +271,7 @@ function tableHTML(rows, qLine, q2Line){
   let s='<table><thead><tr><th class="t">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
     const cls = i<qLine ? 'q' : (i<q2Line ? 'q2' : '');
-    s+=`<tr class="${cls}"><td class="t">${i+1}. ${r.team}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td class="pts">${r.pts}</td></tr>`;
+    s+=`<tr class="${cls}"><td class="t">${i+1}. ${crest(r.team)}${r.team}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td class="pts">${r.pts}</td></tr>`;
   });
   return s+'</tbody></table>';
 }
@@ -302,8 +345,8 @@ function renderBracket(){
         ? `${t.legs[0].score} \u00b7 ${t.legs[1].score}${t.legs[1].score_detail?' '+t.legs[1].score_detail:''}`
         : `${t.legs[0].score}${t.legs[0].score_detail?' '+t.legs[0].score_detail:''}`;
       html+=`<div class="tie">
-        <div class="tm ${t.winner===t.a?'w':''}"><span>${t.a}</span><span>${t.ga}</span></div>
-        <div class="tm ${t.winner===t.b?'w':''}"><span>${t.b}</span><span>${t.gb}</span></div>
+        <div class="tm ${t.winner===t.a?'w':''}"><span>${crest(t.a)}${t.a}</span><span>${t.ga}</span></div>
+        <div class="tm ${t.winner===t.b?'w':''}"><span>${crest(t.b)}${t.b}</span><span>${t.gb}</span></div>
         <div class="legs">${t.legs.length===2?'Legs: ':''}${legs}</div>
       </div>`;
     });
@@ -337,9 +380,9 @@ function toggle(i){
   row.classList.add('exp');
   const ex=row.querySelector('.expand');
   if(ex.dataset.vid){
-    ex.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${ex.dataset.vid}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${ex.dataset.credit}</div>`;
+    ex.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${ex.dataset.vid}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${ex.dataset.credit}</div>` + lineupHTML(flat[Number(ex.dataset.i)]);
   } else {
-    ex.innerHTML=`<div class="fallback">No indexed video yet for this match. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a></div>`;
+    ex.innerHTML=`<div class="fallback">No indexed video yet for this match. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a></div>` + lineupHTML(flat[Number(ex.dataset.i)]);
   }
   row.scrollIntoView({block:'nearest'});
 }
