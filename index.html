@@ -51,7 +51,10 @@ header>p{color:var(--steel);margin:8px 0 16px;max-width:74ch}
 .readout .crest{width:22px;height:22px;margin:0}
 main{padding:24px 30px 90px;max-width:1140px}
 .season-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
-.season-head h2{font:700 36px/1 "Barlow Condensed"}
+.season-head h2{font:700 36px/1 "Barlow Condensed";position:relative}
+.season-head h2 select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;font-size:16px}
+.season-head h2 .caret{color:var(--steel);font-size:16px;margin-left:8px;vertical-align:middle}
+.season-head h2:hover .caret{color:var(--gold)}
 .season-head .champ{color:var(--steel)}
 .season-head .champ b{color:var(--gold);font-weight:600}
 .views{display:flex;gap:2px;margin-top:14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
@@ -232,6 +235,17 @@ function buildSeasonNav(){
   tlread.style.left=x+'px';
 }
 window.addEventListener('resize',buildSeasonNav);
+function seasonSelect(){
+  let h='<select aria-label="Jump to season" onchange="setSeason(this.value,true)">';
+  let dec=null;
+  seasons.forEach(sn=>{
+    const d=Math.floor((+sn.slice(0,4))/10)*10;
+    if(d!==dec){if(dec!==null)h+='</optgroup>';h+=`<optgroup label="${d}s">`;dec=d;}
+    const c=champs[sn];
+    h+=`<option value="${sn}"${sn===curSeason?' selected':''}>${sn.replace('-','/')}${c?' \u00b7 '+c:''}</option>`;
+  });
+  return h+'</optgroup></select>';
+}
 function gotoSeason(s){setSeason(s,false);}
 
 function crest(team){
@@ -306,7 +320,7 @@ function seasonHeader(){
   const sorter=curView==='matches'?`<span class="sorter">SORT
     <button class="${sortMode==='stage'?'on':''}" onclick="sortMode='stage';render()">STAGE</button>/
     <button class="${sortMode==='date'?'on':''}" onclick="sortMode='date';render()">DATE</button></span>`:'';
-  return `<div class="season-head"><h2>${curSeason.replace('-','/')}</h2>
+  return `<div class="season-head"><h2>${curSeason.replace('-','/')}<span class="caret">\u25BE</span>${seasonSelect()}</h2>
     <div class="champ">${era} \u00b7 Champions: <b>${champs[curSeason]||'\u2013'}</b> \u00b7 ${ms.length} matches</div></div>
     <div class="views">${tabs}${sorter}</div>`;
 }
