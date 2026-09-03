@@ -299,8 +299,7 @@ function renderMatches(){
     if(mds.length>1||mds[0]!=null){
       mds.sort((a,b)=>(a||0)-(b||0)).forEach(md=>{
         const rows=sm.filter(m=>m.matchday===md);
-        const open=(!st.startsWith('Group')&&st!=='League Phase'&&!st.startsWith('Second Group'))||!!filter;
-        html+=`<div class="md ${open?'open':''}"><button onclick="this.parentNode.classList.toggle('open')">${md?'Matchday '+md:st}</button><div class="rows">`;
+        html+=`<div class="md open"><button onclick="this.parentNode.classList.toggle('open')">${md?'Matchday '+md:st}</button><div class="rows">`;
         rows.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
         html+='</div></div>';
       });
