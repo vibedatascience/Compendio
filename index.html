@@ -13,29 +13,45 @@
 *{box-sizing:border-box;margin:0}
 body{background:var(--night);color:var(--chalk);font:400 15px/1.5 Barlow,system-ui,sans-serif}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-header{padding:30px 30px 0;border-bottom:1px solid var(--line)}
+input{font:inherit}
+header{padding:26px 30px 0;border-bottom:1px solid var(--line)}
+.topline{display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
 h1{font:700 46px/1 "Barlow Condensed";letter-spacing:.5px}
 h1 span{color:var(--gold)}
-header>p{color:var(--steel);margin:10px 0 20px;max-width:70ch}
-.seasons{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
-.seasons button{padding:10px 14px;font:600 17px "Barlow Condensed";letter-spacing:.5px;color:var(--steel);border-bottom:3px solid transparent;white-space:nowrap}
-.seasons button:hover{color:var(--chalk)}
+.tools{margin-left:auto;display:flex;gap:10px;align-items:center}
+.tools input{background:var(--pitch);border:1px solid var(--line);color:var(--chalk);padding:8px 12px;width:190px}
+.tools input::placeholder{color:var(--steel)}
+.tools .rnd{background:var(--gold);color:var(--night);padding:8px 16px;font:600 16px "Barlow Condensed";letter-spacing:1px}
+header>p{color:var(--steel);margin:8px 0 16px;max-width:74ch}
+.decades{display:flex;gap:2px;flex-wrap:wrap}
+.decades button{padding:8px 13px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--steel)}
+.decades button.active{color:var(--gold)}
+.seasons{display:flex;gap:2px;overflow-x:auto}
+.seasons button{padding:9px 13px;font:600 17px "Barlow Condensed";letter-spacing:.5px;color:var(--steel);border-bottom:3px solid transparent;white-space:nowrap}
+.seasons button:hover,.decades button:hover{color:var(--chalk)}
 .seasons button.active{color:var(--gold);border-bottom-color:var(--gold)}
-main{padding:26px 30px 90px;max-width:1120px}
-.season-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+main{padding:24px 30px 90px;max-width:1140px}
+.season-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
 .season-head h2{font:700 36px/1 "Barlow Condensed"}
 .season-head .champ{color:var(--steel)}
 .season-head .champ b{color:var(--gold);font-weight:600}
-.stage{margin-top:30px}
+.views{display:flex;gap:2px;margin-top:14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.views button{padding:9px 16px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--steel);border-bottom:3px solid transparent}
+.views button:hover{color:var(--chalk)}
+.views button.active{color:var(--gold);border-bottom-color:var(--gold)}
+.views .sorter{margin-left:auto;color:var(--steel);font:600 14px "Barlow Condensed";letter-spacing:1px;padding:9px 0}
+.views .sorter button{padding:0 6px;color:var(--steel)}
+.views .sorter button.on{color:var(--gold)}
+.stage{margin-top:28px}
 .stage>h3{font:600 15px/1 "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);padding-bottom:8px;border-bottom:1px solid var(--line)}
-.md{margin-top:14px}
+.md{margin-top:12px}
 .md>button{width:100%;display:flex;align-items:center;gap:10px;padding:8px 4px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--chalk);text-align:left}
 .md>button::before{content:"";width:7px;height:7px;border-right:2px solid var(--steel);border-bottom:2px solid var(--steel);transform:rotate(45deg);transition:transform .15s}
 .md.open>button::before{transform:rotate(-135deg)}
 .md .rows{display:none}
 .md.open .rows{display:block}
 .row{border-bottom:1px solid var(--line)}
-.row>button{width:100%;display:grid;grid-template-columns:92px 1fr 76px 1fr 34px;align-items:center;gap:10px;padding:10px 4px;text-align:left}
+.row>button{width:100%;display:grid;grid-template-columns:92px 1fr 84px 1fr 34px;align-items:center;gap:10px;padding:9px 4px;text-align:left}
 .row>button:hover{background:var(--pitch)}
 .row .d{color:var(--steel);font:500 14px "Barlow Condensed";letter-spacing:.5px}
 .row .h{text-align:right;font-weight:500}
@@ -44,26 +60,40 @@ main{padding:26px 30px 90px;max-width:1120px}
 .row .cam{text-align:center;color:var(--steel);font-size:13px}
 .row .cam.has{color:var(--gold)}
 .row.exp>button{background:var(--pitch)}
-.expand{display:none;padding:14px 4px 20px}
+.crest{width:20px;height:20px;object-fit:contain;vertical-align:-4px;margin:0 6px}
+.row .h .crest{margin-right:0;margin-left:6px}
+td.t .crest{width:17px;height:17px;margin:0 6px 0 0}
+.tie .crest{width:18px;height:18px;margin-right:7px}
+.expand{display:none;padding:12px 4px 22px}
 .row.exp .expand{display:block}
+.matchmeta{color:var(--steel);font-size:13.5px;margin-bottom:12px;max-width:840px}
+.goalcols{display:flex;gap:24px;max-width:840px;margin-bottom:12px;font-size:13.5px}
+.goalcols>div{flex:1}
+.goalcols .gh{text-align:right}
+.goalcols .min{color:var(--gold);font:600 13px "Barlow Condensed"}
 .expand .player{aspect-ratio:16/9;max-width:840px;background:#000;border:1px solid var(--line)}
 .expand iframe{width:100%;height:100%;border:0;display:block}
 .expand .credit{color:var(--steel);font-size:13px;margin-top:8px;max-width:840px}
-.expand .fallback{max-width:840px;background:var(--panel);border:1px solid var(--line);padding:18px 20px}
+.expand .fallback{max-width:840px;background:var(--panel);border:1px solid var(--line);padding:16px 20px}
 .expand .fallback a{color:var(--gold);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold)}
-.classic-note{color:var(--steel);margin:4px 0 10px}
-
-.views{display:flex;gap:2px;margin-top:18px;border-bottom:1px solid var(--line)}
-.views button{padding:9px 16px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--steel);border-bottom:3px solid transparent}
-.views button:hover{color:var(--chalk)}
-.views button.active{color:var(--gold);border-bottom-color:var(--gold)}
+.pitchwrap{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;max-width:840px}
+.pitchside{flex:1;min-width:300px}
+.pitchside h5{font:600 15px "Barlow Condensed";letter-spacing:1.5px;margin-bottom:4px;display:flex;align-items:center}
+.pitchside .coach{color:var(--steel);font-size:12.5px;margin-bottom:8px}
+.pitch{width:100%;aspect-ratio:10/13;background:linear-gradient(180deg,#0e2f6e 0 50%,#0c2a64 50% 100%);border:1px solid var(--line);position:relative}
+.pitch::before{content:"";position:absolute;inset:0;border-bottom:1px solid var(--line)}
+.pp{position:absolute;transform:translate(-50%,-50%);text-align:center;width:74px}
+.pp .num{width:26px;height:26px;line-height:26px;border-radius:50%;background:var(--night);border:1.5px solid var(--gold);color:var(--gold);font:600 13px "Barlow Condensed";margin:0 auto}
+.pp .nm{font-size:10.5px;color:var(--chalk);margin-top:2px;text-shadow:0 1px 2px #000;line-height:1.15}
+.benchlist{color:var(--steel);font-size:12.5px;margin-top:8px;line-height:1.6}
+.benchlist b{color:var(--chalk);font-weight:500}
 .tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:26px;margin-top:22px}
 .gtable h4{font:600 15px/1 "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);margin-bottom:8px}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{font:600 13px "Barlow Condensed";letter-spacing:1px;color:var(--steel);text-align:right;padding:6px 7px;border-bottom:1px solid var(--line)}
 th.t{text-align:left}
 td{padding:6px 7px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
-td.t{text-align:left;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+td.t{text-align:left;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
 td.pts{color:var(--gold);font-weight:600}
 tr.q td{box-shadow:inset 3px 0 0 var(--gold)}
 tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
@@ -74,80 +104,77 @@ tr.q2 td{box-shadow:inset 3px 0 0 var(--steel)}
 .round h4{font:600 15px/1 "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);margin-bottom:12px}
 .round .ties{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:12px}
 .tie{background:var(--panel);border:1px solid var(--line);padding:10px 12px}
-.tie .tm{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.tie .tm{display:flex;justify-content:space-between;gap:10px;padding:3px 0;align-items:center}
 .tie .tm.w{color:var(--gold);font-weight:600}
 .tie .tm span:last-child{font:600 16px "Barlow Condensed"}
 .tie .legs{color:var(--steel);font-size:12.5px;margin-top:5px}
-
-
-.crest{width:20px;height:20px;object-fit:contain;vertical-align:-4px;margin:0 6px}
-.row .h .crest{margin-right:0;margin-left:6px}
-td.t .crest{width:17px;height:17px;margin:0 6px 0 0}
-.tie .crest{width:18px;height:18px;margin-right:7px}
-.pitchwrap{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;max-width:840px}
-.pitchside{flex:1;min-width:300px}
-.pitchside h5{font:600 15px "Barlow Condensed";letter-spacing:1.5px;margin-bottom:4px;display:flex;align-items:center}
-.pitchside .coach{color:var(--steel);font-size:12.5px;margin-bottom:8px}
-.pitch{width:100%;aspect-ratio:10/13;background:linear-gradient(180deg,#0e2f6e 0 50%,#0c2a64 50% 100%);border:1px solid var(--line);position:relative}
-.pitch::before{content:"";position:absolute;inset:0;background:
- radial-gradient(circle at 50% 0,transparent 58px,transparent 59px),
- linear-gradient(var(--line),var(--line)) 50% 0/1px 0;
- border-bottom:1px solid var(--line)}
-.pp{position:absolute;transform:translate(-50%,-50%);text-align:center;width:74px}
-.pp .num{width:26px;height:26px;line-height:26px;border-radius:50%;background:var(--night);border:1.5px solid var(--gold);color:var(--gold);font:600 13px "Barlow Condensed";margin:0 auto}
-.pp .nm{font-size:10.5px;color:var(--chalk);margin-top:2px;text-shadow:0 1px 2px #000;line-height:1.15}
-.benchlist{color:var(--steel);font-size:12.5px;margin-top:8px;line-height:1.6}
-.benchlist b{color:var(--chalk);font-weight:500}
-footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:90ch}
-@media(max-width:760px){
-  h1{font-size:34px} main{padding:20px 14px 70px} header{padding:20px 14px 0}
-  .row>button{grid-template-columns:1fr 64px 1fr 30px}
+footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:96ch}
+@media(max-width:820px){
+  h1{font-size:32px} main{padding:18px 12px 70px} header{padding:18px 12px 0}
+  .row>button{grid-template-columns:1fr 70px 1fr 30px}
   .row .d{display:none}
+  .tools input{width:130px}
 }
 </style>
 </head>
 <body>
 <header>
-  <h1>Compen<span>dio</span></h1>
-  <p>The complete record of Europe's top club competition. Every fixture of every season — league phase, groups, playoffs, knockouts, finals — each linked to the best publicly listed highlight video found for it. Matches without an indexed video yet link straight to a targeted search.</p>
+  <div class="topline">
+    <h1>Compen<span>dio</span></h1>
+    <div class="tools">
+      <input id="q" placeholder="Filter by team..." aria-label="Filter matches by team">
+      <button class="rnd" onclick="randomMatch()">Random match</button>
+    </div>
+  </div>
+  <p>The complete record of Europe's top club competition. Every match of every season since 1956 — with goalscorers, venues, lineups, standings, brackets, and the best publicly listed highlight video found for each.</p>
+  <div class="decades" id="decadeNav"></div>
   <div class="seasons" id="seasonNav"></div>
 </header>
 <main id="main"></main>
-<footer>1,997 matches across 15 modern seasons plus 56 classic finals back to 1956. Videos are embedded from their original YouTube uploaders; nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Fixture data: openfootball (public domain).</footer>
+<footer>6,039 matches across 71 seasons, 1955/56 to 2025/26. Match data, goalscorers, venues, and lineups from UEFA's public match feed; crests from UEFA's image service. Videos are embedded from their original YouTube uploaders — nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Matches without an indexed video link to a targeted search and the official UEFA.com match page.</footer>
 <script src="archive_data.js"></script>
 <script src="logos.js"></script>
 <script src="lineups.js"></script>
 <script>
-const STAGE_ORDER = ['Final','Semifinals','Quarterfinals','Round of 16','Knockout Playoffs','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H'];
-const KO_ORDER = ['Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
-const seasons = [...new Set(MATCHES.map(m=>m.season))].sort().reverse();
-const nav = document.getElementById('seasonNav');
-const main = document.getElementById('main');
-let curSeason = seasons[0], curView = 'matches', flat = [];
+const STAGE_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Playoff Round','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H','Second Group A','Second Group B','Second Group C','Second Group D','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
+const KO_ORDER=['Preliminary Round','First Round','Second Round','Third Round','Knockout Playoffs','Round of 16','Quarterfinals','Semifinals','Final'];
+const seasons=[...new Set(MATCHES.map(m=>m.season))].sort().reverse();
+const nav=document.getElementById('seasonNav');
+const dnav=document.getElementById('decadeNav');
+const main=document.getElementById('main');
+let curSeason=seasons[0],curView='matches',curDecade=Math.floor((+seasons[0].slice(0,4))/10)*10,flat=[],sortMode='stage',filter='';
 
 function winnerOf(m){
-  const [h,a] = m.score.split('-').map(Number);
-  if (h>a) return m.home;
-  if (a>h) return m.away;
-  const p = (m.score_detail||'').match(/pen\.?\s*(\d+)-(\d+)/) || (m.score_detail||'').match(/\((\d+)-(\d+)p\)/);
-  if (p) return Number(p[1])>Number(p[2]) ? m.home : m.away;
+  if(!m.score) return null;
+  const [h,a]=m.score.split('-').map(Number);
+  if(h>a) return m.home;
+  if(a>h) return m.away;
+  const p=(m.score_detail||'').match(/pen\.?\s*(\d+)-(\d+)/);
+  if(p) return Number(p[1])>Number(p[2])?m.home:m.away;
   return null;
 }
-const champs = {};
-MATCHES.filter(m=>m.stage==='Final').forEach(m=>{ champs[m.season] = winnerOf(m); });
+const champs={};
+MATCHES.filter(m=>m.stage==='Final').forEach(m=>{champs[m.season]=winnerOf(m);});
 
-seasons.forEach((s,i)=>{
+const decades=[...new Set(seasons.map(s=>Math.floor((+s.slice(0,4))/10)*10))].sort((a,b)=>b-a);
+decades.forEach(d=>{
   const b=document.createElement('button');
-  b.textContent=s.replace('-','/');
-  b.onclick=()=>{curSeason=s;curView='matches';setActive(b);render();};
-  if(i===0) b.classList.add('active');
-  nav.appendChild(b);
+  b.textContent=d+'s'; b.dataset.d=d;
+  b.onclick=()=>{curDecade=d;buildSeasonNav();};
+  dnav.appendChild(b);
 });
-const cb=document.createElement('button');
-cb.textContent='Classic Finals 1956\u20132011';
-cb.onclick=()=>{curSeason=null;setActive(cb);renderClassic();};
-nav.appendChild(cb);
-function setActive(btn){document.querySelectorAll('.seasons button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function buildSeasonNav(){
+  document.querySelectorAll('.decades button').forEach(b=>b.classList.toggle('active',+b.dataset.d===curDecade));
+  nav.innerHTML='';
+  seasons.filter(s=>Math.floor((+s.slice(0,4))/10)*10===curDecade).sort().forEach(s=>{
+    const b=document.createElement('button');
+    b.textContent=s.replace('-','/');
+    b.classList.toggle('active',s===curSeason);
+    b.onclick=()=>{curSeason=s;curView='matches';buildSeasonNav();render();};
+    nav.appendChild(b);
+  });
+}
+function gotoSeason(s){curSeason=s;curDecade=Math.floor((+s.slice(0,4))/10)*10;buildSeasonNav();}
 
 function crest(team){
   const u=LOGOS[team];
@@ -157,8 +184,7 @@ function pitchSide(side){
   let pts='';
   side.xi.forEach(p=>{
     if(p.x==null||p.y==null) return;
-    const lx=p.x/10, ly=96-p.y*0.092;
-    pts+=`<div class="pp" style="left:${lx}%;top:${ly}%"><div class="num">${p.n||''}</div><div class="nm">${p.name||''}</div></div>`;
+    pts+=`<div class="pp" style="left:${p.x/10}%;top:${96-p.y*0.092}%"><div class="num">${p.n||''}</div><div class="nm">${p.name||''}</div></div>`;
   });
   const bench=side.bench.map(b=>`${b.n||''} ${b.name||''}`).join(', ');
   return `<div class="pitchside"><h5>${crest(side.team)}${side.team}</h5>
@@ -167,63 +193,86 @@ function pitchSide(side){
     <div class="benchlist"><b>Bench:</b> ${bench||'\u2013'}</div></div>`;
 }
 function lineupHTML(m){
-  const lu=m.uefa_id && LINEUPS[String(m.uefa_id)];
-  if(!lu) return '';
-  return `<div class="pitchwrap">${pitchSide(lu.h)}${pitchSide(lu.a)}</div>`;
+  const lu=m.uefa_id&&LINEUPS[String(m.uefa_id)];
+  return lu?`<div class="pitchwrap">${pitchSide(lu.h)}${pitchSide(lu.a)}</div>`:'';
+}
+function goalsHTML(m){
+  if(!m.goals||!m.goals.length) return '';
+  const g=s=>m.goals.filter(x=>x.s===s).map(x=>`<div><span class="min">${x.m?x.m+"'":''}</span> ${x.p}</div>`).join('');
+  return `<div class="goalcols"><div class="gh">${g('h')}</div><div>${g('a')}</div></div>`;
+}
+function metaHTML(m){
+  const bits=[];
+  if(m.venue) bits.push(m.venue+(m.city?', '+m.city:''));
+  if(m.att) bits.push(Number(m.att).toLocaleString()+' attendance');
+  return bits.length?`<div class="matchmeta">${bits.join(' \u00b7 ')}</div>`:'';
 }
 function ytSearchUrl(m){
-  const yr = m.date ? m.date.slice(0,4) : m.season.slice(0,4);
-  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${m.home} ${m.away} ${m.score} Champions League ${yr} highlights`);
+  const yr=m.date?m.date.slice(0,4):m.season.slice(0,4);
+  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(`${m.home} ${m.away} ${m.score} Champions League ${yr} highlights`);
 }
-function fmtDate(d){ if(!d) return ''; const [y,mo,da]=d.split('-'); return `${da} ${mo} ${y.slice(2)}`; }
-function matchRow(m, idx){
-  const has = !!m.video_id;
+function fmtDate(d){if(!d)return'';const[y,mo,da]=d.split('-');const M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${da} ${M[+mo]} ${y.slice(2)}`;}
+function matchRow(m,idx){
+  const has=!!m.video_id;
   return `<div class="row" id="r${idx}">
     <button onclick="toggle(${idx})">
-      <span class="d">${m.dateLabel||fmtDate(m.date)}</span>
+      <span class="d">${fmtDate(m.date)}</span>
       <span class="h">${m.home}${crest(m.home)}</span>
       <span class="sc">${m.score||'\u2013'}${m.score_detail?`<small>${m.score_detail}</small>`:''}</span>
       <span class="a">${crest(m.away)}${m.away}</span>
       <span class="cam ${has?'has':''}">${has?'\u25B6':'\u2197'}</span>
     </button>
-    <div class="expand" data-vid="${m.video_id||''}" data-search="${ytSearchUrl(m)}"
-      data-credit="${has?(m.video_title||'').replace(/"/g,'&quot;')+' \u2014 '+(m.channel||''):''}" data-i="${idx}"></div>
+    <div class="expand" data-i="${idx}"></div>
   </div>`;
 }
-
 function seasonHeader(){
-  const ms = MATCHES.filter(m=>m.season===curSeason);
-  const tabs = [['matches','Matches'],['standings','Standings'],['bracket','Bracket']]
+  const ms=MATCHES.filter(m=>m.season===curSeason);
+  const era=+curSeason.slice(0,4)>=1992?'Champions League':'European Cup';
+  const tabs=[['matches','Matches'],['standings','Standings'],['bracket','Bracket']]
     .map(([k,l])=>`<button class="${curView===k?'active':''}" onclick="curView='${k}';render()">${l}</button>`).join('');
+  const sorter=curView==='matches'?`<span class="sorter">SORT
+    <button class="${sortMode==='stage'?'on':''}" onclick="sortMode='stage';render()">STAGE</button>/
+    <button class="${sortMode==='date'?'on':''}" onclick="sortMode='date';render()">DATE</button></span>`:'';
   return `<div class="season-head"><h2>${curSeason.replace('-','/')}</h2>
-    <div class="champ">Champions: <b>${champs[curSeason]||'\u2013'}</b> \u00b7 ${ms.length} matches</div></div>
-    <div class="views">${tabs}</div>`;
+    <div class="champ">${era} \u00b7 Champions: <b>${champs[curSeason]||'\u2013'}</b> \u00b7 ${ms.length} matches</div></div>
+    <div class="views">${tabs}${sorter}</div>`;
 }
-
 function render(){
-  if(curView==='matches') renderMatches();
-  else if(curView==='standings') renderStandings();
+  if(curView==='matches')renderMatches();
+  else if(curView==='standings')renderStandings();
   else renderBracket();
 }
-
+function passFilter(m){
+  if(!filter)return true;
+  const f=filter.toLowerCase();
+  return m.home.toLowerCase().includes(f)||m.away.toLowerCase().includes(f);
+}
 function renderMatches(){
-  const ms = MATCHES.filter(m=>m.season===curSeason);
+  let ms=MATCHES.filter(m=>m.season===curSeason&&passFilter(m));
   flat=[];
-  let html = seasonHeader();
+  let html=seasonHeader();
+  if(!ms.length){main.innerHTML=html+'<p class="legend">No matches for this filter in this season.</p>';return;}
+  if(sortMode==='date'){
+    ms=ms.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    html+='<div class="stage"><h3>ALL MATCHES \u00b7 CHRONOLOGICAL</h3><div class="md open"><div class="rows">';
+    ms.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
+    html+='</div></div></div>';
+    main.innerHTML=html;return;
+  }
   STAGE_ORDER.forEach(st=>{
     const sm=ms.filter(m=>m.stage===st);
-    if(!sm.length) return;
+    if(!sm.length)return;
     html+=`<div class="stage"><h3>${st.toUpperCase()}</h3>`;
     const mds=[...new Set(sm.map(m=>m.matchday))];
-    if(mds.length>1 || mds[0]!=null){
+    if(mds.length>1||mds[0]!=null){
       mds.sort((a,b)=>(a||0)-(b||0)).forEach(md=>{
         const rows=sm.filter(m=>m.matchday===md);
-        const open = !st.startsWith('Group') && st!=='League Phase';
+        const open=(!st.startsWith('Group')&&st!=='League Phase'&&!st.startsWith('Second Group'))||!!filter;
         html+=`<div class="md ${open?'open':''}"><button onclick="this.parentNode.classList.toggle('open')">${md?'Matchday '+md:st}</button><div class="rows">`;
         rows.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
         html+='</div></div>';
       });
-    } else {
+    }else{
       html+='<div class="md open"><div class="rows">';
       sm.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
       html+='</div></div>';
@@ -232,104 +281,107 @@ function renderMatches(){
   });
   main.innerHTML=html;
 }
-
 function computeTable(ms){
   const t={};
   ms.forEach(m=>{
-    const [h,a]=m.score.split('-').map(Number);
-    [m.home,m.away].forEach(x=>{ if(!t[x]) t[x]={team:x,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}; });
-    t[m.home].p++; t[m.away].p++;
-    t[m.home].gf+=h; t[m.home].ga+=a; t[m.away].gf+=a; t[m.away].ga+=h;
+    if(!m.score)return;
+    const[h,a]=m.score.split('-').map(Number);
+    [m.home,m.away].forEach(x=>{if(!t[x])t[x]={team:x,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};});
+    t[m.home].p++;t[m.away].p++;
+    t[m.home].gf+=h;t[m.home].ga+=a;t[m.away].gf+=a;t[m.away].ga+=h;
     if(h>a){t[m.home].w++;t[m.away].l++;t[m.home].pts+=3;}
     else if(a>h){t[m.away].w++;t[m.home].l++;t[m.away].pts+=3;}
     else{t[m.home].d++;t[m.away].d++;t[m.home].pts++;t[m.away].pts++;}
   });
   let rows=Object.values(t);
-  rows.sort((x,y)=> y.pts-x.pts || (y.gf-y.ga)-(x.gf-x.ga) || y.gf-x.gf || x.team.localeCompare(y.team));
+  rows.sort((x,y)=>y.pts-x.pts||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf||x.team.localeCompare(y.team));
   for(let i=0;i<rows.length;){
-    let j=i; while(j<rows.length && rows[j].pts===rows[i].pts) j++;
+    let j=i;while(j<rows.length&&rows[j].pts===rows[i].pts)j++;
     if(j-i>1){
       const tied=rows.slice(i,j).map(r=>r.team);
       const h2h=computeH2H(ms,tied);
-      rows.splice(i,j-i,...rows.slice(i,j).sort((x,y)=> h2h[y.team].pts-h2h[x.team].pts || (h2h[y.team].gd)-(h2h[x.team].gd) || (y.gf-y.ga)-(x.gf-x.ga) || y.gf-x.gf));
+      rows.splice(i,j-i,...rows.slice(i,j).sort((x,y)=>h2h[y.team].pts-h2h[x.team].pts||h2h[y.team].gd-h2h[x.team].gd||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf));
     }
     i=j;
   }
   return rows;
 }
 function computeH2H(ms,teams){
-  const set=new Set(teams), r={};
+  const set=new Set(teams),r={};
   teams.forEach(t=>r[t]={pts:0,gd:0});
-  ms.filter(m=>set.has(m.home)&&set.has(m.away)).forEach(m=>{
-    const [h,a]=m.score.split('-').map(Number);
-    r[m.home].gd+=h-a; r[m.away].gd+=a-h;
-    if(h>a) r[m.home].pts+=3; else if(a>h) r[m.away].pts+=3; else {r[m.home].pts++;r[m.away].pts++;}
+  ms.filter(m=>m.score&&set.has(m.home)&&set.has(m.away)).forEach(m=>{
+    const[h,a]=m.score.split('-').map(Number);
+    r[m.home].gd+=h-a;r[m.away].gd+=a-h;
+    if(h>a)r[m.home].pts+=3;else if(a>h)r[m.away].pts+=3;else{r[m.home].pts++;r[m.away].pts++;}
   });
   return r;
 }
-function tableHTML(rows, qLine, q2Line){
+function tableHTML(rows,qLine,q2Line){
   let s='<table><thead><tr><th class="t">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
-    const cls = i<qLine ? 'q' : (i<q2Line ? 'q2' : '');
+    const cls=i<qLine?'q':(i<q2Line?'q2':'');
     s+=`<tr class="${cls}"><td class="t">${i+1}. ${crest(r.team)}${r.team}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td class="pts">${r.pts}</td></tr>`;
   });
   return s+'</tbody></table>';
 }
 function renderStandings(){
-  const ms = MATCHES.filter(m=>m.season===curSeason);
-  const groups = [...new Set(ms.filter(m=>m.stage.startsWith('Group')).map(m=>m.stage))].sort();
-  let html = seasonHeader();
+  const ms=MATCHES.filter(m=>m.season===curSeason);
+  const groups=[...new Set(ms.filter(m=>m.stage.startsWith('Group')||m.stage.startsWith('Second Group')).map(m=>m.stage))].sort();
+  let html=seasonHeader();
   if(groups.length){
     html+='<div class="tables">';
     groups.forEach(g=>{
       html+=`<div class="gtable"><h4>${g.toUpperCase()}</h4>${tableHTML(computeTable(ms.filter(m=>m.stage===g)),2,3)}</div>`;
     });
-    html+='</div><p class="legend"><i style="background:var(--gold)"></i>Round of 16<i style="background:var(--steel)"></i>Europa League drop. Tiebreak: points, head-to-head, goal difference (approximation of UEFA rules).</p>';
-  } else {
-    const lp = ms.filter(m=>m.stage==='League Phase');
-    html+=`<div class="tables" style="grid-template-columns:minmax(430px,760px)"><div class="gtable"><h4>LEAGUE PHASE \u00b7 36 TEAMS</h4>${tableHTML(computeTable(lp),8,24)}</div></div>
-    <p class="legend"><i style="background:var(--gold)"></i>Direct to Round of 16 (top 8)<i style="background:var(--steel)"></i>Knockout playoffs (9\u201324). Tiebreak: points, head-to-head, goal difference (approximation of UEFA rules).</p>`;
+    html+='</div><p class="legend"><i style="background:var(--gold)"></i>Advance<i style="background:var(--steel)"></i>Third place (Europa drop, era-dependent). Points shown as 3 per win in all eras for comparability; tiebreak: points, head-to-head, goal difference (approximation of UEFA rules).</p>';
+  }else{
+    const lp=ms.filter(m=>m.stage==='League Phase');
+    if(lp.length){
+      html+=`<div class="tables" style="grid-template-columns:minmax(430px,760px)"><div class="gtable"><h4>LEAGUE PHASE \u00b7 36 TEAMS</h4>${tableHTML(computeTable(lp),8,24)}</div></div>
+      <p class="legend"><i style="background:var(--gold)"></i>Direct to Round of 16 (top 8)<i style="background:var(--steel)"></i>Knockout playoffs (9\u201324). Tiebreak: points, head-to-head, goal difference (approximation of UEFA rules).</p>`;
+    }else{
+      html+='<p class="legend">This season was a pure knockout competition — no group standings. See the Bracket tab.</p>';
+    }
   }
   main.innerHTML=html;
 }
-
 function buildTies(ms){
   const ties=[];
   ms.forEach(m=>{
-    let t=ties.find(t=> (t.a===m.home&&t.b===m.away)||(t.a===m.away&&t.b===m.home));
-    if(!t){ t={a:m.home,b:m.away,legs:[]}; ties.push(t); }
+    if(!m.score)return;
+    let t=ties.find(t=>(t.a===m.home&&t.b===m.away)||(t.a===m.away&&t.b===m.home));
+    if(!t){t={a:m.home,b:m.away,legs:[]};ties.push(t);}
     t.legs.push(m);
   });
   ties.forEach(t=>{
     t.legs.sort((x,y)=>(x.date||'').localeCompare(y.date||''));
-    let ga=0, gb=0;
+    let ga=0,gb=0;
     t.legs.forEach(m=>{
-      const [h,aw]=m.score.split('-').map(Number);
+      const[h,aw]=m.score.split('-').map(Number);
       if(m.home===t.a){ga+=h;gb+=aw;}else{ga+=aw;gb+=h;}
     });
-    t.ga=ga; t.gb=gb;
-    if(ga>gb) t.winner=t.a;
-    else if(gb>ga) t.winner=t.b;
-    else {
-      const last=t.legs[t.legs.length-1];
-      const w=winnerOf(last);
-      t.winner = w || (t.legs.length===2 ? awayGoalsWinner(t) : t.a);
+    t.ga=ga;t.gb=gb;
+    if(ga>gb)t.winner=t.a;
+    else if(gb>ga)t.winner=t.b;
+    else{
+      const w=winnerOf(t.legs[t.legs.length-1]);
+      t.winner=w||awayGoalsWinner(t);
     }
   });
   return ties;
 }
 function awayGoalsWinner(t){
-  let aAway=0,bAway=0;
+  let aA=0,bA=0;
   t.legs.forEach(m=>{
-    const [h,aw]=m.score.split('-').map(Number);
-    if(m.away===t.a) aAway+=aw;
-    if(m.away===t.b) bAway+=aw;
+    const[h,aw]=m.score.split('-').map(Number);
+    if(m.away===t.a)aA+=aw;
+    if(m.away===t.b)bA+=aw;
   });
-  return aAway>bAway ? t.a : bAway>aAway ? t.b : t.a;
+  return aA>bA?t.a:bA>aA?t.b:t.a;
 }
 function renderBracket(){
-  const ms = MATCHES.filter(m=>m.season===curSeason);
-  const rounds = KO_ORDER.filter(st=>ms.some(m=>m.stage===st)).map(st=>({name:st,ties:buildTies(ms.filter(m=>m.stage===st))}));
+  const ms=MATCHES.filter(m=>m.season===curSeason);
+  const rounds=KO_ORDER.filter(st=>ms.some(m=>m.stage===st)).map(st=>({name:st,ties:buildTies(ms.filter(m=>m.stage===st))}));
   for(let i=rounds.length-2;i>=0;i--){
     const next=rounds[i+1];
     rounds[i].ties.sort((x,y)=>{
@@ -337,57 +389,63 @@ function renderBracket(){
       return pos(x)-pos(y);
     });
   }
-  let html = seasonHeader() + '<div class="bracket">';
+  let html=seasonHeader()+'<div class="bracket">';
   rounds.forEach(r=>{
     html+=`<div class="round"><h4>${r.name.toUpperCase()}</h4><div class="ties">`;
     r.ties.forEach(t=>{
-      const legs = t.legs.length===2
-        ? `${t.legs[0].score} \u00b7 ${t.legs[1].score}${t.legs[1].score_detail?' '+t.legs[1].score_detail:''}`
-        : `${t.legs[0].score}${t.legs[0].score_detail?' '+t.legs[0].score_detail:''}`;
+      const legs=t.legs.length>1
+        ?'Legs: '+t.legs.map(l=>l.score).join(' \u00b7 ')+(t.legs[t.legs.length-1].score_detail?' '+t.legs[t.legs.length-1].score_detail:'')
+        :t.legs[0].score+(t.legs[0].score_detail?' '+t.legs[0].score_detail:'');
       html+=`<div class="tie">
         <div class="tm ${t.winner===t.a?'w':''}"><span>${crest(t.a)}${t.a}</span><span>${t.ga}</span></div>
         <div class="tm ${t.winner===t.b?'w':''}"><span>${crest(t.b)}${t.b}</span><span>${t.gb}</span></div>
-        <div class="legs">${t.legs.length===2?'Legs: ':''}${legs}</div>
+        <div class="legs">${legs}</div>
       </div>`;
     });
     html+='</div></div>';
   });
-  html+='</div><p class="legend">Aggregate scores shown. Level ties decided by penalties or, before 2021/22, away goals.</p>';
+  html+='</div><p class="legend">Aggregate scores shown. Level ties decided by penalties, replays, or away goals depending on era.</p>';
   main.innerHTML=html;
 }
-
-function renderClassic(){
-  flat=[];
-  let html=`<div class="season-head"><h2>Classic Finals</h2><div class="champ">1956\u20132011 \u00b7 European Cup &amp; early Champions League</div></div>
-  <p class="classic-note">Only finals are indexed for these eras so far. Full fixtures for pre-2011 seasons are the next backfill.</p><div class="stage"><h3>FINALS</h3><div class="md open"><div class="rows">`;
-  CLASSIC.slice().reverse().forEach(f=>{
-    const m={season:`${f.year-1}-${String(f.year).slice(2)}`,stage:'Final',date:null,dateLabel:String(f.year),home:f.home,away:f.away,score:f.score.split(' ')[0],score_detail:(f.score.split(' ').slice(1).join(' ')||null),video_id:f.video_id,video_title:f.video_title,channel:f.channel};
-    flat.push(m);
-    html+=matchRow(m,flat.length-1);
-  });
-  html+='</div></div></div>';
-  main.innerHTML=html;
-}
-
 function toggle(i){
   const row=document.getElementById('r'+i);
   const wasOpen=row.classList.contains('exp');
   document.querySelectorAll('.row.exp').forEach(r=>{
     r.classList.remove('exp');
-    const f=r.querySelector('iframe'); if(f) f.remove();
+    const f=r.querySelector('iframe');if(f)f.remove();
   });
-  if(wasOpen) return;
+  if(wasOpen)return;
   row.classList.add('exp');
   const ex=row.querySelector('.expand');
-  if(ex.dataset.vid){
-    ex.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${ex.dataset.vid}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${ex.dataset.credit}</div>` + lineupHTML(flat[Number(ex.dataset.i)]);
-  } else {
-    const fm=flat[Number(ex.dataset.i)];
-    const uefaLink = fm.uefa_id ? ` \u00b7 <a href="https://www.uefa.com/uefachampionsleague/match/${fm.uefa_id}/" target="_blank" rel="noopener">Official match page on UEFA.com</a>` : '';
-    ex.innerHTML=`<div class="fallback">No indexed video yet. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a>${uefaLink}</div>` + lineupHTML(fm);
+  const m=flat[Number(ex.dataset.i)];
+  let inner=metaHTML(m)+goalsHTML(m);
+  if(m.video_id){
+    inner+=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${m.video_id}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${(m.video_title||'').replace(/</g,'&lt;')} \u2014 ${m.channel||''}</div>`;
+  }else{
+    const uefaLink=m.uefa_id?` \u00b7 <a href="https://www.uefa.com/uefachampionsleague/match/${m.uefa_id}/" target="_blank" rel="noopener">Official match page on UEFA.com</a>`:'';
+    inner+=`<div class="fallback">No indexed video yet. <a href="${ytSearchUrl(m)}" target="_blank" rel="noopener">Search highlights on YouTube</a>${uefaLink}</div>`;
   }
+  inner+=lineupHTML(m);
+  ex.innerHTML=inner;
   row.scrollIntoView({block:'nearest'});
 }
+function randomMatch(){
+  const pool=MATCHES.filter(m=>m.score&&(!filter||passFilter(m)));
+  const m=pool[Math.floor(Math.random()*pool.length)];
+  gotoSeason(m.season);
+  curView='matches';sortMode='stage';
+  render();
+  const i=flat.indexOf(m);
+  if(i>=0){
+    const row=document.getElementById('r'+i);
+    let el=row;while(el&&!el.classList.contains('md'))el=el.parentElement;
+    const mdWrap=row.closest('.md');if(mdWrap)mdWrap.classList.add('open');
+    toggle(i);
+    row.scrollIntoView({block:'center'});
+  }
+}
+document.getElementById('q').addEventListener('input',e=>{filter=e.target.value.trim();if(curView==='matches')render();});
+buildSeasonNav();
 render();
 </script>
 </body>
