@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compendio — every European Cup match since 1956</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#06184a; --pitch:#0b2261; --panel:#0e2a70; --line:#22366e;
+  --chalk:#f5f7ff; --steel:#9aa8c7; --gold:#d4af37;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--night);color:var(--chalk);font:400 15px/1.5 Barlow,system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+header{padding:30px 30px 0;border-bottom:1px solid var(--line)}
+h1{font:700 46px/1 "Barlow Condensed";letter-spacing:.5px}
+h1 span{color:var(--gold)}
+header>p{color:var(--steel);margin:10px 0 20px;max-width:70ch}
+.seasons{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
+.seasons button{padding:10px 14px;font:600 17px "Barlow Condensed";letter-spacing:.5px;color:var(--steel);border-bottom:3px solid transparent;white-space:nowrap}
+.seasons button:hover{color:var(--chalk)}
+.seasons button.active{color:var(--gold);border-bottom-color:var(--gold)}
+main{padding:26px 30px 90px;max-width:1120px}
+.season-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.season-head h2{font:700 36px/1 "Barlow Condensed"}
+.season-head .champ{color:var(--steel)}
+.season-head .champ b{color:var(--gold);font-weight:600}
+.stage{margin-top:30px}
+.stage>h3{font:600 15px/1 "Barlow Condensed";letter-spacing:2.5px;color:var(--steel);padding-bottom:8px;border-bottom:1px solid var(--line)}
+.md{margin-top:14px}
+.md>button{width:100%;display:flex;align-items:center;gap:10px;padding:8px 4px;font:600 16px "Barlow Condensed";letter-spacing:1px;color:var(--chalk);text-align:left}
+.md>button::before{content:"";width:7px;height:7px;border-right:2px solid var(--steel);border-bottom:2px solid var(--steel);transform:rotate(45deg);transition:transform .15s}
+.md.open>button::before{transform:rotate(-135deg)}
+.md .rows{display:none}
+.md.open .rows{display:block}
+.row{border-bottom:1px solid var(--line)}
+.row>button{width:100%;display:grid;grid-template-columns:92px 1fr 76px 1fr 34px;align-items:center;gap:10px;padding:10px 4px;text-align:left}
+.row>button:hover{background:var(--pitch)}
+.row .d{color:var(--steel);font:500 14px "Barlow Condensed";letter-spacing:.5px}
+.row .h{text-align:right;font-weight:500}
+.row .sc{text-align:center;font:700 19px "Barlow Condensed";color:var(--gold)}
+.row .sc small{display:block;font:500 11px Barlow;color:var(--steel);letter-spacing:.3px}
+.row .cam{text-align:center;color:var(--steel);font-size:13px}
+.row .cam.has{color:var(--gold)}
+.row.exp>button{background:var(--pitch)}
+.expand{display:none;padding:14px 4px 20px}
+.row.exp .expand{display:block}
+.expand .player{aspect-ratio:16/9;max-width:840px;background:#000;border:1px solid var(--line)}
+.expand iframe{width:100%;height:100%;border:0;display:block}
+.expand .credit{color:var(--steel);font-size:13px;margin-top:8px;max-width:840px}
+.expand .fallback{max-width:840px;background:var(--panel);border:1px solid var(--line);padding:18px 20px}
+.expand .fallback a{color:var(--gold);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold)}
+.classic-note{color:var(--steel);margin:4px 0 10px}
+footer{padding:22px 30px;border-top:1px solid var(--line);color:var(--steel);font-size:13.5px;max-width:90ch}
+@media(max-width:760px){
+  h1{font-size:34px} main{padding:20px 14px 70px} header{padding:20px 14px 0}
+  .row>button{grid-template-columns:1fr 64px 1fr 30px}
+  .row .d{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Compen<span>dio</span></h1>
+  <p>The complete record of Europe's top club competition. Every fixture of every season — league phase, groups, playoffs, knockouts, finals — each linked to the best publicly listed highlight video found for it. Matches without an indexed video yet link straight to a targeted search.</p>
+  <div class="seasons" id="seasonNav"></div>
+</header>
+<main id="main"></main>
+<footer>1,997 matches across 15 modern seasons plus 56 classic finals back to 1956. Videos are embedded from their original YouTube uploaders; nothing is hosted or copied here, and a blank player means the uploader removed or restricted it. Fixture data: openfootball (public domain).</footer>
+<script src="archive_data.js"></script>
+<script>
+const STAGE_ORDER = ['Final','Semifinals','Quarterfinals','Round of 16','Knockout Playoffs','League Phase','Group A','Group B','Group C','Group D','Group E','Group F','Group G','Group H'];
+const seasons = [...new Set(MATCHES.map(m=>m.season))].sort().reverse();
+const nav = document.getElementById('seasonNav');
+const main = document.getElementById('main');
+const champs = {};
+MATCHES.filter(m=>m.stage==='Final').forEach(m=>{
+  const [h,a]=m.score.split('-').map(Number);
+  champs[m.season] = m.score_detail && m.score_detail.includes('p') ?
+    (parsePens(m.score_detail) ? m.home : (h>a?m.home:h<a?m.away:m.home)) : (h>=a?m.home:m.away);
+  if(h<a) champs[m.season]=m.away;
+  if(h>a) champs[m.season]=m.home;
+  if(h===a){
+    const p=(m.score_detail||'').match(/(\d+)-(\d+)\s*p/) || (m.video_title||'').match(/(\d+)-(\d+)\s*Pens/i);
+    champs[m.season]= p ? (Number(p[1])>Number(p[2])?m.home:m.away) : m.home;
+  }
+});
+function parsePens(){return null}
+
+seasons.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.textContent=s.replace('-','/');
+  b.onclick=()=>render('season',s,b);
+  if(i===0){b.classList.add('active')}
+  nav.appendChild(b);
+});
+const cb=document.createElement('button');
+cb.textContent='Classic Finals 1956\u20132011';
+cb.onclick=()=>render('classic',null,cb);
+nav.appendChild(cb);
+
+function ytSearchUrl(m){
+  const yr = m.date ? m.date.slice(0,4) : m.season.slice(0,4);
+  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${m.home} ${m.away} ${m.score} Champions League ${yr} highlights`);
+}
+function fmtDate(d){
+  if(!d) return '';
+  const [y,mo,da]=d.split('-');
+  return `${da} ${mo} ${y.slice(2)}`;
+}
+function matchRow(m, idx){
+  const has = !!m.video_id;
+  return `<div class="row" id="r${idx}">
+    <button onclick="toggle(${idx})">
+      <span class="d">${fmtDate(m.date)}</span>
+      <span class="h">${m.home}</span>
+      <span class="sc">${m.score||'\u2013'}${m.score_detail?`<small>${m.score_detail}</small>`:''}</span>
+      <span class="a">${m.away}</span>
+      <span class="cam ${has?'has':''}">${has?'\u25B6':'\u2197'}</span>
+    </button>
+    <div class="expand" data-vid="${m.video_id||''}" data-search="${ytSearchUrl(m)}"
+      data-credit="${has?(m.video_title||'').replace(/"/g,'&quot;')+' \u2014 '+(m.channel||''):''}"></div>
+  </div>`;
+}
+let flat=[];
+function render(kind, season, btn){
+  document.querySelectorAll('.seasons button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  flat=[];
+  if(kind==='classic'){
+    let html=`<div class="season-head"><h2>Classic Finals</h2><div class="champ">1956\u20132011 \u00b7 European Cup &amp; early Champions League</div></div>
+    <p class="classic-note">Only finals are indexed for these eras so far. Full fixtures for pre-2011 seasons are the next backfill.</p><div class="stage"><h3>FINALS</h3><div class="md open"><div class="rows">`;
+    CLASSIC.slice().reverse().forEach(f=>{
+      const m={season:`${f.year-1}-${String(f.year).slice(2)}`,stage:'Final',date:null,home:f.home,away:f.away,score:f.score.split(' ')[0],score_detail:(f.score.split(' ')[1]||null),video_id:f.video_id,video_title:f.video_title,channel:f.channel};
+      m.dateLabel=String(f.year);
+      flat.push(m);
+      html+=matchRow(m,flat.length-1).replace('<span class="d"></span>',`<span class="d">${f.year}</span>`);
+    });
+    html+='</div></div></div>';
+    main.innerHTML=html;
+    return;
+  }
+  const ms = MATCHES.filter(m=>m.season===season);
+  const champ = champs[season];
+  let html=`<div class="season-head"><h2>${season.replace('-','/')}</h2><div class="champ">Champions: <b>${champ||'\u2013'}</b> \u00b7 ${ms.length} matches</div></div>`;
+  STAGE_ORDER.forEach(st=>{
+    const sm=ms.filter(m=>m.stage===st);
+    if(!sm.length) return;
+    html+=`<div class="stage"><h3>${st.toUpperCase()}</h3>`;
+    const mds=[...new Set(sm.map(m=>m.matchday))];
+    if(mds.length>1 || mds[0]!=null){
+      mds.sort((a,b)=>(a||0)-(b||0)).forEach(md=>{
+        const rows=sm.filter(m=>m.matchday===md);
+        const open = !st.startsWith('Group') && st!=='League Phase';
+        html+=`<div class="md ${open?'open':''}"><button onclick="this.parentNode.classList.toggle('open')">${md?'Matchday '+md:st}</button><div class="rows">`;
+        rows.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
+        html+='</div></div>';
+      });
+    } else {
+      html+='<div class="md open"><div class="rows">';
+      sm.forEach(m=>{flat.push(m);html+=matchRow(m,flat.length-1);});
+      html+='</div></div>';
+    }
+    html+='</div>';
+  });
+  main.innerHTML=html;
+}
+function toggle(i){
+  const row=document.getElementById('r'+i);
+  const wasOpen=row.classList.contains('exp');
+  document.querySelectorAll('.row.exp').forEach(r=>{
+    r.classList.remove('exp');
+    const f=r.querySelector('iframe'); if(f) f.remove();
+  });
+  if(wasOpen) return;
+  row.classList.add('exp');
+  const ex=row.querySelector('.expand');
+  if(ex.dataset.vid){
+    ex.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${ex.dataset.vid}" title="Match highlights" allow="fullscreen; encrypted-media" allowfullscreen></iframe></div><div class="credit">Video: ${ex.dataset.credit}</div>`;
+  } else {
+    ex.innerHTML=`<div class="fallback">No indexed video yet for this match. <a href="${ex.dataset.search}" target="_blank" rel="noopener">Search highlights on YouTube</a></div>`;
+  }
+  row.scrollIntoView({block:'nearest'});
+}
+render('season',seasons[0],nav.firstChild);
+</script>
+</body>
+</html>
