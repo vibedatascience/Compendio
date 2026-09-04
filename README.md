@@ -13,7 +13,7 @@ The complete record of Europe's top club competition. Every fixture of every sea
 
 ## Coverage status
 
-Videos: 4,897 of 6,039 matches (81%). By decade:
+Videos: 4,857 of 6,039 matches (80%), all title-verified and checked embeddable. By decade:
 
 | Decade | Matches with video |
 |--------|--------------------|

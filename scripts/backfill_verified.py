@@ -8,7 +8,7 @@ LIMIT=int(sys.argv[2]) if len(sys.argv)>2 else 10**9
 
 OFFICIAL=["uefa","tnt sports","cbs sports","bt sport","paramount","dazn","movistar","real madrid","liverpool","bayern","barcelona","psg","chelsea","inter","juventus","milan","manchester","arsenal","dortmund","atletico","napoli","porto","benfica","ajax","celtic","tottenham"]
 STOP={'fc','cf','sc','ac','as','sk','fk','nk','kv','rc','cd','ud','sv','bsc','vfb','vfl','tsv','ss','us','afc','rsc','ksc','club','de','di','the','la','le','real','sporting','dinamo','dynamo','spartak','lokomotiv','partizan','red','star','crvena','zvezda','athletic','atletico','united','city','town','rovers','borussia','fk','olympique','olympiacos'}
-ALIAS={'bucuresti':'bucharest','bucureşti':'bucharest','munchen':'munich','monchengladbach':'gladbach','koln':'cologne','beograd':'belgrade','lisboa':'lisbon','praha':'prague','warszawa':'warsaw','goteborg':'gothenburg','sevilla':'seville','torino':'turin','napoli':'naples','wien':'vienna','moskva':'moscow','kyiv':'kiev','kobenhavn':'copenhagen','athens':'athina','athina':'athens','saloniki':'thessaloniki','marseille':'marseilles'}
+ALIAS={'barca':'barcelona','bucuresti':'bucharest','bucureşti':'bucharest','munchen':'munich','monchengladbach':'gladbach','koln':'cologne','beograd':'belgrade','lisboa':'lisbon','praha':'prague','warszawa':'warsaw','goteborg':'gothenburg','sevilla':'seville','torino':'turin','napoli':'naples','wien':'vienna','moskva':'moscow','kyiv':'kiev','kobenhavn':'copenhagen','athens':'athina','athina':'athens','saloniki':'thessaloniki','marseille':'marseilles'}
 
 def norm(s):
     s=unicodedata.normalize('NFKD',s).encode('ascii','ignore').decode().lower()
@@ -124,6 +124,11 @@ def verify_core(m,e):
     if y is None: return score_ok(m,title,strict=True)
     return score_ok(m,title)
 
+import urllib.request
+def embeddable(vid):
+    try:
+        urllib.request.urlopen(urllib.request.Request(f'https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={vid}&format=json',headers={'User-Agent':'Mozilla/5.0'}),timeout=10); return True
+    except Exception: return False
 def rank(m,es):
     good=[e for e in es if verify(m,e)]
     def sc(e):
@@ -134,7 +139,9 @@ def rank(m,es):
         if d and d>3600: s-=8_000_000
         return s
     good.sort(key=sc,reverse=True)
-    return good[0] if good else None
+    for e in good:
+        if embeddable(e['id']): return e
+    return None
 
 def search(q,n=5):
     cmd=['yt-dlp',f'ytsearch{n}:{q}','--flat-playlist','-J','--no-warnings','--no-check-certificates']
@@ -162,7 +169,9 @@ if __name__=='__main__':
     d=json.load(open(SRC))
     try: results=json.load(open(OUT))
     except Exception: results={}
-    targets=[m for m in d if not m['video_id'] and m['uefa_id'] not in results][:LIMIT]
+    import os
+    tset=set(json.load(open('research_targets.json'))) if os.path.exists('research_targets.json') else None
+    targets=[m for m in d if ((m['uefa_id'] in tset) if tset else not m['video_id']) and m['uefa_id'] not in results][:LIMIT]
     print(f'{len(targets)} to fetch, {len(results)} already done',flush=True)
     lock=threading.Lock(); n=[0]; hits=[0]; t0=time.time()
     with ThreadPoolExecutor(WORKERS) as ex:
